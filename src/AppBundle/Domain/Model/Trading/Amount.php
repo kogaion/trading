@@ -9,7 +9,7 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
-use Symfony\Component\Validator\Constraints\Currency;
+use AppBundle\Domain\Model\Trading\Currency;
 
 class Amount
 {
@@ -40,6 +40,22 @@ class Amount
     {
         $this->value = $value;
         return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
     }
 
 

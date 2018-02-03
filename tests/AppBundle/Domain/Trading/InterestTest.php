@@ -7,51 +7,63 @@
  */
 
 use AppBundle\Domain\Model\Trading\Interest;
+use \AppBundle\Domain\Model\Trading\Currency;
+use \AppBundle\Domain\Model\Trading\Amount;
 
 class InterestTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
 {
-    public function testDailyInterestPrecision()
+    public function testInterestInterval()
     {
         $interval = new \DateInterval('P1Y');
-        $date = new \DateTime();
         $percent = 9;
+//        $date = new \DateTime();
+//        $daysInYear = 365 + (int) $date->format("L");
+//        $currency = Mockery::spy(Currency::class)->makePartial()->setPrecision(2);
+//        $amount = Mockery::spy(Amount::class)->makePartial()->setValue($daysInYear)->setCurrency($currency);
 
-        $interest = Mockery::spy(Interest::class, [$percent, $interval])->makePartial();
+        $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
 
-        $this->assertNotEquals(round($percent  / (365 + (int) $date->format("L")), 2), $interest->getDailyInterest(3));
-        $this->assertEquals(round($percent  / (365 + (int) $date->format("L")), 3), $interest->getDailyInterest(3));
-        $this->assertNotEquals(round($percent  / (365 + (int) $date->format("L")), 4), $interest->getDailyInterest(3));
+        $interest->setInterval(new \DateInterval('P1D'));
+        $this->assertNotEquals($percent, $interest->getPercent());
 
-        $this->assertNotEquals(round($percent  / (364 + (int) $date->format("L")), 7), $interest->getDailyInterest(7));
-        $this->assertEquals(round($percent  / (365 + (int) $date->format("L")), 7), $interest->getDailyInterest(7));
-        $this->assertNotEquals(round($percent  / (366 + (int) $date->format("L")), 7), $interest->getDailyInterest(7));
+        $interest->setInterval(new \DateInterval('P1M'));
+        $this->assertNotEquals($percent, $interest->getPercent());
+
+        $interest->setInterval($interval);
+        $this->assertEquals($percent, $interest->getPercent());
     }
 
-
-    public function testDailyInterestForAnYear()
+    public function testInterestPercent()
     {
         $interval = new \DateInterval('P1Y');
-        $date = new \DateTime();
         $percent = 9;
-
-        $interest = Mockery::spy(Interest::class, [$percent, $interval])->makePartial();
-        $this->assertEquals(round($percent  / (365 + (int) $date->format("L")), 3), $interest->getDailyInterest(3));
-    }
-
-    public function testDailyInterestForAMonth()
-    {
-        $interval = new \DateInterval('P1M');
         $date = new \DateTime();
+        $daysInYear = 365 + (int) $date->format("L");
+//        $currency = Mockery::spy(Currency::class)->makePartial()->setPrecision(2);
+//        $amount = Mockery::spy(Amount::class)->makePartial()->setValue($daysInYear)->setCurrency($currency);
 
-        $interest = Mockery::spy(Interest::class, [$date->format("t"), $interval])->makePartial();
-        $this->assertEquals(1.00, $interest->getDailyInterest());
+        $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
+
+        $interest->setInterval(new \DateInterval('P1D'));
+        $this->assertEquals($percent / $daysInYear, $interest->getPercent());
+
+        $interest->setInterval($interval);
+        $this->assertEquals($percent, $interest->getPercent());
     }
 
-    public function testDailyInterestForTwoDays()
+    public function testInterestAmount()
     {
-        $interval = new \DateInterval('P2D');
+        $interval = new \DateInterval('P1Y');
+        $percent = 9;
+        $date = new \DateTime();
+        $daysInYear = 365 + (int) $date->format("L");
+        $currency = Mockery::spy(Currency::class)->makePartial()->setPrecision(2);
+        $amount = Mockery::spy(Amount::class)->makePartial()->setValue($daysInYear)->setCurrency($currency);
 
-        $interest = Mockery::spy(Interest::class, [1, $interval])->makePartial();
-        $this->assertEquals(0.50, $interest->getDailyInterest());
+        $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
+        $this->assertEquals($percent * $amount->getValue() / 100, $interest->getInterest($amount)->getValue());
+
+        $interest->setInterval(new \DateInterval('P2D'));
+        $this->assertEquals($percent * $amount->getValue() / 100 / $daysInYear * 2, $interest->getInterest($amount)->getValue());
     }
 }

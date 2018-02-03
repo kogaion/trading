@@ -8,7 +8,6 @@
 
 namespace AppBundle\Domain\Model\Trading;
 
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class Quote
 {
@@ -31,12 +30,12 @@ class Quote
     protected $bidValue;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     protected $transactionDate;
 
     /**
-     * @return DateTime
+     * @return \DateTime
      */
     public function getTransactionDate()
     {

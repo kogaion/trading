@@ -9,6 +9,7 @@
 namespace AppBundle\Domain\Model\Util;
 
 
+
 class DateTimeInterval
 {
     /**
@@ -17,10 +18,18 @@ class DateTimeInterval
      */
     public static function recalculate(\DateInterval $interval)
     {
-        $startDate = new \DateTime;
+        $startDate = static::getToday();
         $endDate = clone $startDate;
         $endDate = $endDate->add($interval);
 
         return $startDate->diff($endDate);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public static function getToday()
+    {
+        return new \DateTime();
     }
 }

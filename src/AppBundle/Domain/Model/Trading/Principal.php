@@ -8,7 +8,6 @@
 
 namespace AppBundle\Domain\Model\Trading;
 
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class Principal
 {
@@ -17,12 +16,12 @@ class Principal
      */
     protected $unitValue;
     /**
-     * @var DateTime end date of this principal
+     * @var \DateTime end date of this principal
      */
     protected $amortizationDate;
 
     /**
-     * @var float
+     * @var Interest
      */
     protected $interest;
 
@@ -30,4 +29,12 @@ class Principal
      * @var string
      */
     protected $symbol;
+
+    /**
+     * @return Interest
+     */
+    public function getInterest()
+    {
+        return $this->interest;
+    }
 }

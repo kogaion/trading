@@ -10,9 +10,10 @@ namespace AppBundle\Domain\Service\Reporting;
 
 
 use AppBundle\Domain\Model\Trading\Amount;
+use AppBundle\Domain\Model\Trading\InterestFactory;
 use AppBundle\Domain\Model\Trading\Principal;
 use AppBundle\Domain\Model\Trading\Quote;
-use Symfony\Component\Validator\Constraints\DateTime;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
 
 class InterestEvolution
 {
@@ -32,7 +33,7 @@ class InterestEvolution
     protected $buyValue;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     protected $targetDate;
 
@@ -43,6 +44,19 @@ class InterestEvolution
 
     public function getEvolution()
     {
-//        return $this->principal->
+        $principalDailyInterest = $this->principal->getInterest()->getInterest();
+
+        $interest = InterestFactory::makeInterest();
+        $interest->setPercent($this->principal->getInterest());
+
+        $fromDate = DateTimeInterval::getToday();
+        $toDate = $this->targetDate;
+        $interval = $fromDate->diff($toDate);
+        $interest->setInterval($interval);
+
+
+
+//        $interest->setInterval()
+//        return 1 + $this->principal->getInterest()
     }
 }

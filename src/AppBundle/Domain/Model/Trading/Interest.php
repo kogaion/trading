@@ -16,7 +16,7 @@ class Interest
     /**
      * @var float
      */
-    protected $percent;
+    protected $percent = 0.00;
 
     /**
      * @var \DateInterval
@@ -24,23 +24,52 @@ class Interest
     protected $interval;
 
     /**
-     * Interest constructor.
-     * @param float $percent
-     * @param \DateInterval|null $interval
+     * @param Amount $amount
+     * @return Amount
      */
-    public function __construct($percent = 0.00, \DateInterval $interval = null)
+    public function getInterest(Amount $amount)
     {
-        $this->percent = max(min(round($percent, 2), 100.00), 0.00);
-        $this->interval = $interval;
+        return AmountFactory::makeAmount(
+            round($this->percent * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
+            $amount->getCurrency()
+        );
     }
 
     /**
-     * @param int $precision
+     * @param float $percent
+     * @return Interest
+     */
+    public function setPercent($percent)
+    {
+        $this->percent = max(min(round($percent, 2), 100.00), 0.00);
+        return $this;
+    }
+
+    /**
+     * @param \DateInterval $interval
+     * @return Interest
+     */
+    public function setInterval($interval)
+    {
+        if (!empty($interval)) {
+            $interval = DateTimeInterval::recalculate($interval);
+        }
+
+        if (empty($this->interval)) {
+            $this->interval = $interval;
+        } else if ($this->percent > 0) {
+            $this->percent = $this->percent / $this->interval->format("%a") * $interval->format("%a");
+            $this->interval = $interval;
+        }
+
+        return $this;
+    }
+
+    /**
      * @return float
      */
-    public function getDailyInterest($precision = 2)
+    public function getPercent()
     {
-        $dateInterval = DateTimeInterval::recalculate($this->interval);
-        return round($this->percent / $dateInterval->format("%a"), $precision);
+        return $this->percent;
     }
 }
