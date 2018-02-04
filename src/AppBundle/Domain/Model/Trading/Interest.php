@@ -19,21 +19,22 @@ class Interest
     protected $percent = 0.00;
 
     /**
+     * @var int
+     */
+    protected $percentPrecision = 2;
+    /**
+     * @var float
+     */
+    protected $percentMin = 0.0;
+    /**
+     * @var float
+     */
+    protected $percentMax = 100.0;
+
+    /**
      * @var \DateInterval
      */
     protected $interval;
-
-    /**
-     * @param Amount $amount
-     * @return Amount
-     */
-    public function getInterest(Amount $amount)
-    {
-        return AmountFactory::makeAmount(
-            round($this->percent * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
-            $amount->getCurrency()
-        );
-    }
 
     /**
      * @param float $percent
@@ -41,7 +42,7 @@ class Interest
      */
     public function setPercent($percent)
     {
-        $this->percent = max(min(round($percent, 2), 100.00), 0.00);
+        $this->percent = max(min(round($percent, $this->percentPrecision), $this->percentMax), $this->percentMin);
         return $this;
     }
 
@@ -71,5 +72,13 @@ class Interest
     public function getPercent()
     {
         return $this->percent;
+    }
+
+    /**
+     * @return \DateInterval
+     */
+    public function getInterval()
+    {
+        return $this->interval;
     }
 }

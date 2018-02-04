@@ -9,7 +9,7 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
-use AppBundle\Domain\Model\Trading\Currency;
+use AppBundle\Domain\Model\Util\InvalidOperationException;
 
 class Amount
 {
@@ -58,5 +58,18 @@ class Amount
         return $this->currency;
     }
 
+    /**
+     * @param Amount $amount
+     * @return $this
+     * @throws InvalidOperationException
+     */
+    public function add(Amount $amount)
+    {
+        if ($this->getCurrency() != $amount->getCurrency()) {
+            throw new InvalidOperationException("Currency mismatch", InvalidOperationException::ERR_CURRENCY_MISMATCH);
+        }
 
+        $this->setValue($this->getValue() + $amount->getValue());
+        return $this;
+    }
 }

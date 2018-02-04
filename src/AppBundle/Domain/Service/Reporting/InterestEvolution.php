@@ -10,10 +10,10 @@ namespace AppBundle\Domain\Service\Reporting;
 
 
 use AppBundle\Domain\Model\Trading\Amount;
-use AppBundle\Domain\Model\Trading\InterestFactory;
 use AppBundle\Domain\Model\Trading\Principal;
 use AppBundle\Domain\Model\Trading\Quote;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
+use AppBundle\Domain\Service\Trading\InterestService;
 
 class InterestEvolution
 {
@@ -44,15 +44,15 @@ class InterestEvolution
 
     public function getEvolution()
     {
-        $principalDailyInterest = $this->principal->getInterest()->getInterest();
-
-        $interest = InterestFactory::makeInterest();
-        $interest->setPercent($this->principal->getInterest());
-
-        $fromDate = DateTimeInterval::getToday();
-        $toDate = $this->targetDate;
-        $interval = $fromDate->diff($toDate);
-        $interest->setInterval($interval);
+//        $principalInterest = $this->principal->getInterest();
+//
+//        $interest = InterestService::makeInterest();
+//        $interest->setPercent($this->principal->getInterest());
+//
+//        $fromDate = DateTimeInterval::getToday();
+//        $toDate = $this->targetDate;
+//        $interval = $fromDate->diff($toDate);
+//        $interest->setInterval($interval);
 
 
 
