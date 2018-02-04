@@ -66,7 +66,7 @@ class Amount
     public function add(Amount $amount)
     {
         if ($this->getCurrency() != $amount->getCurrency()) {
-            throw new InvalidOperationException("Currency mismatch", InvalidOperationException::ERR_CURRENCY_MISMATCH);
+            throw new InvalidOperationException("Currency mismatch: {$this->getCurrency()->getSymbol()} <> {$amount->getCurrency()->getSymbol()}", InvalidOperationException::ERR_CURRENCY_MISMATCH);
         }
 
         $this->setValue($this->getValue() + $amount->getValue());

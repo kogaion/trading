@@ -12,6 +12,7 @@ namespace AppBundle\Domain\Service\Trading;
 use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Currency;
 use AppBundle\Domain\Model\Trading\Interest;
+use AppBundle\Domain\Model\Util\InvalidArgumentException;
 
 class AmountService
 {
@@ -23,6 +24,29 @@ class AmountService
     public static function makeAmount($value, $currency)
     {
         return (new Amount())->setValue($value)->setCurrency($currency);
+    }
+
+    /**
+     * @facade
+     * @param float $value
+     * @param string $currencySymbol
+     * @return Amount
+     * @throws InvalidArgumentException
+     */
+    public static function buildAmount($value, $currencySymbol)
+    {
+        /**
+         * @todo - get from Repository
+         */
+        static $currencyPrecision = [
+            'LEI' => 2,
+            'USD' => 2,
+            'EUR' => 2,
+        ];
+        if (!array_key_exists($currencySymbol, $currencyPrecision)) {
+            throw new InvalidArgumentException("Invalid currency: {$currencySymbol}", InvalidArgumentException::ERR_CURRENCY_INVALID);
+        }
+        return (new Amount())->setValue($value)->setCurrency(CurrencyService::makeCurrency($currencySymbol, $currencyPrecision[$currencySymbol]));
     }
 
     /**
@@ -41,6 +65,5 @@ class AmountService
             $amount->getCurrency()
         );
     }
-
 
 }

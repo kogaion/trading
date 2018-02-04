@@ -11,6 +11,7 @@ namespace AppBundle\Domain\Service\Trading;
 
 use AppBundle\Domain\Model\Trading\Currency;
 
+
 class CurrencyService
 {
     /**

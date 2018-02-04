@@ -1,3 +1,7 @@
 app:
     resource: '@AppBundle/Presentation/Controller/'
     type: annotation
+
+bonds_view:
+    path: /bonds/{slug}
+    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }

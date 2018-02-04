@@ -16,7 +16,7 @@ use AppBundle\Domain\Service\Trading\AmountService;
 
 class AmountServiceTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
 {
-    public function testInterestAmount()
+    public function testInterestAmountChangesWithTheInterval()
     {
         $interval = new \DateInterval('P1Y');
         $percent = 9;

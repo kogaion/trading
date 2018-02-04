@@ -15,10 +15,10 @@ class CurrencyTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
     {
         $currency = Mockery::spy(Currency::class)->makePartial();
 
-        $currency->setSymbol('aud');
+        $currency->setSymbol('lei');
 
-        $this->assertEquals('AUD', $currency->getSymbol());
-        $this->assertNotEquals('aud', $currency->getSymbol());
+        $this->assertEquals('LEI', $currency->getSymbol());
+        $this->assertNotEquals('lei', $currency->getSymbol());
     }
 
     public function testCurrencySymbolAcceptsThreeLettersOnly()

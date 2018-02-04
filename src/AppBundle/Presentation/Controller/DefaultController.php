@@ -17,9 +17,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $currency = CurrencyService::makeCurrency('LEI');
+        $currency = 'LEI';
         $interest = InterestService::makeInterest(12, new \DateInterval('P1Y'));
-        $amount = AmountService::makeAmount(4500, $currency);
+        $amount = AmountService::buildAmount(4500, $currency);
         $evaluationInterval = DateTimeInterval::getToday()->diff(new \DateTime('2018-12-31'));
 
         $amountService = new AmountService();
@@ -29,7 +29,7 @@ class DefaultController extends Controller
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
             'interest'  => $amount->add($amountFromInterest)->getValue(),
-            'currency'  => $currency->getSymbol()
+            'currency'  => $currency,
         ]);
     }
 }

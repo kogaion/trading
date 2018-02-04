@@ -9,32 +9,28 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
-class Principal
+abstract class Principal
 {
-    /**
-     * @var Amount
-     */
-    protected $unitValue;
-    /**
-     * @var \DateTime end date of this principal
-     */
-    protected $amortizationDate;
-
-    /**
-     * @var Interest
-     */
-    protected $interest;
-
     /**
      * @var string
      */
     protected $symbol;
 
     /**
-     * @return Interest
+     * @param string $symbol
+     * @return $this
      */
-    public function getInterest()
+    public function setSymbol($symbol)
     {
-        return $this->interest;
+        $this->symbol = $symbol;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSymbol()
+    {
+        return $this->symbol;
     }
 }
