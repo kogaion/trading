@@ -41,40 +41,6 @@ class BondsEvolution
     }
 
     /**
-     * @param \DateInterval $interval
-     * @return Evolution[]
-     */
-    public function getEvolution(\DateInterval $interval)
-    {
-        $fromDate = DateTimeInterval::getToday();
-        $toDate = $this->principal->getMaturityDate();
-
-        $return = [];
-
-        $curDate = clone $fromDate;
-        while (true) {
-            $curDate = $curDate->add($interval);
-            if ($curDate->format('U') > $toDate->format('U')) {
-                $curDate = clone $toDate;
-            }
-
-            $amountFromInterest = $this->amountService->getAmountInterestForInterval(
-                $this->portfolio->getPrice(),
-                $this->principal->getInterest(),
-                $fromDate->diff($curDate)
-            );
-
-            $return[] = EvolutionService::makeEvolution(clone $curDate, $amountFromInterest);
-
-            if ($curDate->format('U') >= $toDate->format('U')) {
-                break;
-            }
-        }
-
-        return $return;
-    }
-
-    /**
      * @param PrincipalBonds $principal
      * @return BondsEvolution
      */
@@ -94,5 +60,47 @@ class BondsEvolution
         return $this;
     }
 
+    /**
+     * @param \DateInterval $interval
+     * @return Evolution[]
+     */
+    public function getEvolution(\DateInterval $interval)
+    {
+        $fromDate = DateTimeInterval::getToday();
+        $toDate = $this->principal->getMaturityDate();
 
+        $return = [];
+
+        $curDate = clone $fromDate;
+        while (true) {
+            $curDate = $curDate->add($interval);
+            if ($curDate->format('U') > $toDate->format('U')) {
+                $curDate = clone $toDate;
+            }
+
+            $return[] = $this->getInterestForInterval($fromDate, $curDate);
+
+            if ($curDate->format('U') >= $toDate->format('U')) {
+                break;
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param \DateTime $fromDate
+     * @param \DateTime $toDate
+     * @return Evolution
+     */
+    protected function getInterestForInterval($fromDate, $toDate)
+    {
+        $amountFromInterest = $this->amountService->getAmountInterestForInterval(
+            $this->portfolio->getPrice(),
+            $this->principal->getInterest(),
+            $fromDate->diff($toDate)
+        );
+
+        return EvolutionService::makeEvolution($toDate, $amountFromInterest);
+    }
 }

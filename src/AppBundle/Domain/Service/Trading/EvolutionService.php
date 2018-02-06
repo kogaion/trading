@@ -16,6 +16,6 @@ class EvolutionService
 {
     public static function makeEvolution(\DateTime $date, Amount $amount)
     {
-        return (new Evolution())->setDate($date)->setAmount($amount);
+        return (new Evolution())->setDate(clone $date)->setAmount($amount);
     }
 }

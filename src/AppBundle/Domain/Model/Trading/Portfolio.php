@@ -9,6 +9,8 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
+use AppBundle\Domain\Service\Trading\AmountService;
+
 class Portfolio
 {
     /**
@@ -19,6 +21,10 @@ class Portfolio
      * @var Amount
      */
     protected $acquisitionPrice;
+    /**
+     * @var Amount
+     */
+    protected $price;
 
     /**
      * @param Amount $acquisitionPrice
@@ -27,6 +33,7 @@ class Portfolio
     public function setAcquisitionPrice(Amount $acquisitionPrice)
     {
         $this->acquisitionPrice = $acquisitionPrice;
+        $this->setPrice();
         return $this;
     }
 
@@ -37,6 +44,7 @@ class Portfolio
     public function setBalance($balance)
     {
         $this->balance = $balance;
+        $this->setPrice();
         return $this;
     }
 
@@ -61,8 +69,17 @@ class Portfolio
      */
     public function getPrice()
     {
-        $price = clone $this->acquisitionPrice;
-        $price->setValue($this->getAcquisitionPrice()->getValue() * $this->getBalance());
-        return $price;
+        return $this->price;
+    }
+
+    protected function setPrice()
+    {
+        if (null !== $this->acquisitionPrice) {
+            $this->price = AmountService::makeAmount(
+                $this->getAcquisitionPrice()->getValue() * $this->getBalance(),
+                $this->getAcquisitionPrice()->getCurrency()
+            );
+        }
+        return $this;
     }
 }

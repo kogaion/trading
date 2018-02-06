@@ -19,7 +19,7 @@ class DateTimeInterval
     public static function recalculate(\DateInterval $interval)
     {
         $startDate = static::getToday();
-        $endDate = clone $startDate;
+        $endDate = static::getToday();
         $endDate = $endDate->add($interval);
 
         return $startDate->diff($endDate);
