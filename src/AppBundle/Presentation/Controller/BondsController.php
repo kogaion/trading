@@ -55,11 +55,18 @@ class BondsController extends Controller
                 $dateStart = $evolution->getDate();
             }
             $dateEnd = $evolution->getDate();
-            return [$evolution->getDate()->format('U') * 1000, $evolution->getAmount()->getValue()];
+            return [
+                $evolution->getDate()->format('U') * 1000,
+                $evolution->getAmount()->getValue()
+            ];
         }, $evolutions);
 
         $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $currency) {
-            return [$evolution->getDate()->format('U') * 1000, $evolution->getAmount()->getValue() / $initialValue * 100];
+            return [
+                'x' => $evolution->getDate()->format('U') * 1000,
+                'y' => $evolution->getAmount()->getValue() / $initialValue * 100,
+                'z' => $evolution->getAmount()->getValue()
+            ];
         }, $evolutions);
 
         return $this->render("bonds/view.html.twig", [

@@ -129,8 +129,13 @@
                     //min: 0
                 },
                 tooltip: {
-                    headerFormat: '<b>{series.name}</b><br>',
-                    pointFormat: '{point.x:%e. %b %y}: {point.y:.2f} %'
+                    useHTML: true,
+                    formatter: function() {
+                        return '<b>' + this.series.name + '</b><br />'
+                            + Highcharts.dateFormat('%e. %b %y', this.x) + ': <b>' + Highcharts.numberFormat(this.y, 2) + '%</b><br />'
+                            + this.point.z +' {{ currency|e('js') }}'
+                        ;
+                    }
                 },
 
                 plotOptions: {
@@ -143,7 +148,7 @@
 
                 series: [{
                     name: '{{ principal|e('js') }} Profit Ratio',
-                    data: {{ percentSeries|json_encode }}
+                    data: {{ percentSeries|json_encode|raw }}
                 }]
             });
         });
