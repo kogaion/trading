@@ -11,10 +11,10 @@
 use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Currency;
 use AppBundle\Domain\Model\Trading\Interest;
-use AppBundle\Domain\Service\Trading\AmountService;
+use AppBundle\Domain\Service\Trading\InterestService;
 
 
-class AmountServiceTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
+class InterestServiceTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
 {
     public function testInterestAmountChangesWithTheInterval()
     {
@@ -25,16 +25,16 @@ class AmountServiceTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
         $currency = Mockery::spy(Currency::class)->makePartial();
         $amount = Mockery::spy(Amount::class)->makePartial()->setValue($daysInYear)->setCurrency($currency);
         $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
-        $amountService = Mockery::spy(AmountService::class)->makePartial();
+        $service = Mockery::spy(InterestService::class)->makePartial();
 
         $this->assertEquals(
             $percent * $amount->getValue() / 100,
-            $amountService->getAmountInterestForInterval($amount, $interest, $interval)->getValue()
+            $service->getInterestForInterval($amount, $interest, $interval)->getValue()
         );
 
         $this->assertEquals(
             $percent * $amount->getValue() / 100 / $daysInYear * 2,
-            $amountService->getAmountInterestForInterval($amount, $interest, new \DateInterval('P2D'))->getValue()
+            $service->getInterestForInterval($amount, $interest, new \DateInterval('P2D'))->getValue()
         );
     }
 }

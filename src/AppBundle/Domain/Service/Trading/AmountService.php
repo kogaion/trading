@@ -49,21 +49,4 @@ class AmountService
         return (new Amount())->setValue($value)->setCurrency(CurrencyService::makeCurrency($currencySymbol, $currencyPrecision[$currencySymbol]));
     }
 
-    /**
-     * @param Amount $amount
-     * @param Interest $interest
-     * @param \DateInterval $evaluationInterval
-     * @return Amount
-     */
-    public function getAmountInterestForInterval(Amount $amount, Interest $interest, \DateInterval $evaluationInterval)
-    {
-        $evaluatedInterest = InterestService::makeInterest($interest->getPercent(), $interest->getInterval());
-        $evaluatedInterest->setInterval($evaluationInterval);
-
-        return static::makeAmount(
-            round($evaluatedInterest->getPercent() * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
-            $amount->getCurrency()
-        );
-    }
-
 }

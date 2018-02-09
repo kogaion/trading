@@ -21,6 +21,6 @@ class PortfolioService
      */
     public static function makePortfolio($balance, Amount $acquisitionAmount)
     {
-        return (new Portfolio())->setAcquisitionPrice($acquisitionAmount)->setBalance($balance);
+        return (new Portfolio())->setUnitPrice($acquisitionAmount)->setBalance($balance);
     }
 }

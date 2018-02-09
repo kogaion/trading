@@ -20,19 +20,19 @@ class Portfolio
     /**
      * @var Amount
      */
-    protected $acquisitionPrice;
+    protected $unitPrice;
     /**
      * @var Amount
      */
     protected $price;
 
     /**
-     * @param Amount $acquisitionPrice
+     * @param Amount $unitPrice
      * @return Portfolio
      */
-    public function setAcquisitionPrice(Amount $acquisitionPrice)
+    public function setUnitPrice(Amount $unitPrice)
     {
-        $this->acquisitionPrice = $acquisitionPrice;
+        $this->unitPrice = $unitPrice;
         $this->setPrice();
         return $this;
     }
@@ -51,9 +51,9 @@ class Portfolio
     /**
      * @return Amount
      */
-    public function getAcquisitionPrice()
+    public function getUnitPrice()
     {
-        return $this->acquisitionPrice;
+        return $this->unitPrice;
     }
 
     /**
@@ -74,10 +74,10 @@ class Portfolio
 
     protected function setPrice()
     {
-        if (null !== $this->acquisitionPrice) {
+        if (null !== $this->unitPrice) {
             $this->price = AmountService::makeAmount(
-                $this->getAcquisitionPrice()->getValue() * $this->getBalance(),
-                $this->getAcquisitionPrice()->getCurrency()
+                $this->getUnitPrice()->getValue() * $this->getBalance(),
+                $this->getUnitPrice()->getCurrency()
             );
         }
         return $this;

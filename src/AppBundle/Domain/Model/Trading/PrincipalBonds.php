@@ -71,4 +71,12 @@ class PrincipalBonds extends Principal
     {
         return $this->interest;
     }
+
+    /**
+     * @return Amount
+     */
+    public function getFaceValue()
+    {
+        return $this->faceValue;
+    }
 }

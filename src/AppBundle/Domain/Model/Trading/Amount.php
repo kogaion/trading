@@ -72,4 +72,20 @@ class Amount
         $this->setValue($this->getValue() + $amount->getValue());
         return $this;
     }
+
+
+    /**
+     * @param Amount $amount
+     * @return $this
+     * @throws InvalidOperationException
+     */
+    public function sub(Amount $amount)
+    {
+        if ($this->getCurrency() != $amount->getCurrency()) {
+            throw new InvalidOperationException("Currency mismatch: {$this->getCurrency()->getSymbol()} <> {$amount->getCurrency()->getSymbol()}", InvalidOperationException::ERR_CURRENCY_MISMATCH);
+        }
+
+        $this->setValue($this->getValue() - $amount->getValue());
+        return $this;
+    }
 }

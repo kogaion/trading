@@ -3,5 +3,5 @@ app:
     type: annotation
 
 bonds_view:
-    path: /bonds/{slug}
+    path: /bonds/{bondsSymbol}
     defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }

@@ -9,6 +9,8 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
+use AppBundle\Domain\Model\Util\DateTimeInterval;
+
 class Evolution
 {
     /**

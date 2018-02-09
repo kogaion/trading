@@ -9,7 +9,7 @@
 namespace AppBundle\Domain\Service\Reporting;
 
 
-class AskEvolution
+class AskEvolutionService
 {
 
 }

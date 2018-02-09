@@ -9,6 +9,7 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
+use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Interest;
 
 class InterestService
@@ -21,5 +22,22 @@ class InterestService
     public static function makeInterest($percent, \DateInterval $interval)
     {
         return (new Interest())->setPercent($percent)->setInterval($interval);
+    }
+
+    /**
+     * @param Amount $amount
+     * @param Interest $interest
+     * @param \DateInterval $evaluationInterval
+     * @return Amount
+     */
+    public function getInterestForInterval(Amount $amount, Interest $interest, \DateInterval $evaluationInterval)
+    {
+        $evaluatedInterest = InterestService::makeInterest($interest->getPercent(), $interest->getInterval());
+        $evaluatedInterest->setInterval($evaluationInterval);
+
+        return AmountService::makeAmount(
+            round($evaluatedInterest->getPercent() * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
+            $amount->getCurrency()
+        );
     }
 }

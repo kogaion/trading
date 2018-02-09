@@ -2,10 +2,9 @@
 
 namespace AppBundle\Presentation\Controller;
 
-use AppBundle\Domain\Service\Trading\AmountService;
-use AppBundle\Domain\Model\Util\DateTimeInterval;
-use AppBundle\Domain\Service\Trading\CurrencyService;
 use AppBundle\Domain\Service\Trading\InterestService;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
+use AppBundle\Domain\Service\Trading\AmountService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,8 +21,8 @@ class DefaultController extends Controller
         $amount = AmountService::buildAmount(4500, $currency);
         $evaluationInterval = DateTimeInterval::getToday()->diff(new \DateTime('2018-12-31'));
 
-        $amountService = new AmountService();
-        $amountFromInterest = $amountService->getAmountInterestForInterval($amount, $interest, $evaluationInterval);
+        $interestService = new InterestService();
+        $amountFromInterest = $interestService->getInterestForInterval($amount, $interest, $evaluationInterval);
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
