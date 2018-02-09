@@ -11,7 +11,6 @@ namespace AppBundle\Domain\Service\Trading;
 
 use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Currency;
-use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 
 class AmountService

@@ -14,6 +14,10 @@ use AppBundle\Domain\Service\Trading\AmountService;
 class Portfolio
 {
     /**
+     * @var \DateTime
+     */
+    protected $acquisitionDate;
+    /**
      * @var int
      */
     protected $balance;
@@ -81,5 +85,23 @@ class Portfolio
             );
         }
         return $this;
+    }
+
+    /**
+     * @param \DateTime $acquisitionDate
+     * @return Portfolio
+     */
+    public function setAcquisitionDate($acquisitionDate)
+    {
+        $this->acquisitionDate = $acquisitionDate;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getAcquisitionDate()
+    {
+        return $this->acquisitionDate;
     }
 }

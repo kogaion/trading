@@ -2,34 +2,45 @@
 /**
  * Created by PhpStorm.
  * User: Kogaion
- * Date: 2/4/2018
- * Time: 11:52 PM
+ * Date: 2/9/2018
+ * Time: 8:43 PM
  */
 
 namespace AppBundle\Domain\Model\Trading;
 
 
-
-class Evolution
+class Inflation
 {
+    /**
+     * @var float
+     */
+    protected $ratio;
     /**
      * @var \DateTime
      */
     protected $date;
 
     /**
-     * @var Amount
+     * @param float $ratio
+     * @return Inflation
      */
-    protected $amount;
+    public function setRatio($ratio)
+    {
+        $this->ratio = $ratio;
+        return $this;
+    }
 
     /**
-     * @var float
+     * @return float
      */
-    protected $value;
+    public function getRatio()
+    {
+        return $this->ratio;
+    }
 
     /**
      * @param \DateTime $date
-     * @return Evolution
+     * @return Inflation
      */
     public function setDate($date)
     {
@@ -43,23 +54,5 @@ class Evolution
     public function getDate()
     {
         return $this->date;
-    }
-
-    /**
-     * @param float $value
-     * @return Evolution
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-        return $this;
-    }
-
-    /**
-     * @return float
-     */
-    public function getValue()
-    {
-        return $this->value;
     }
 }

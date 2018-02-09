@@ -10,9 +10,9 @@ namespace AppBundle\Domain\Service\Reporting;
 
 
 use AppBundle\Domain\Model\Trading\Amount;
+use AppBundle\Domain\Model\Trading\Evolution;
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
-use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Service\Trading\AmountService;
 use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Service\Trading\EvolutionService;
@@ -66,7 +66,12 @@ class BondsEvolutionService
         return $this;
     }
 
-    public function getPortfolioEvolution(\DateTime $fromDate, \DateInterval $interval)
+    /**
+     * @param \DateTime $fromDate
+     * @param \DateInterval $interval
+     * @return Evolution[]
+     */
+    public function getEvolution(\DateTime $fromDate, \DateInterval $interval)
     {
         $toDate = clone $this->principal->getMaturityDate();
 
@@ -75,14 +80,14 @@ class BondsEvolutionService
         $curDate = clone $fromDate;
         while (true) {
             $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-            $return[] = EvolutionService::makeEvolution(clone $curDate, $amount);
+            $return[] = EvolutionService::makeEvolution(clone $curDate, $amount->getValue());
 
             $curDate = $curDate->add($interval);
             if ($curDate->format('U') >= $toDate->format('U')) {
                 $curDate = clone $toDate;
 
                 $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-                $return[] = EvolutionService::makeEvolution(clone $curDate, $amount);
+                $return[] = EvolutionService::makeEvolution(clone $curDate, $amount->getValue());
 
                 break;
             }
@@ -114,7 +119,8 @@ class BondsEvolutionService
     {
         return PortfolioService::makePortfolio(
             $this->portfolio->getBalance(),
-            $this->principal->getFaceValue()
+            $this->principal->getFaceValue(),
+            $this->portfolio->getAcquisitionDate()
         );
     }
 

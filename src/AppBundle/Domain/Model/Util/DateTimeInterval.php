@@ -30,6 +30,15 @@ class DateTimeInterval
      */
     public static function getToday()
     {
-        return new \DateTime();
+        return new \DateTime('today');
+    }
+
+    /**
+     * @param string $dateString
+     * @return \DateTime
+     */
+    public static function getDate($dateString = 'now')
+    {
+        return new \DateTime($dateString);
     }
 }

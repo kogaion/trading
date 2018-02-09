@@ -3,11 +3,26 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            body { background: #F5F5F5; font: 18px/1.5 sans-serif; }
+            h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
+            h1 { font-size: 36px; }
+            h2 { font-size: 21px; margin-bottom: 1em; }
+            p { margin: 0 0 1em 0; }
+            a { color: #0000F0; }
+            a:hover { text-decoration: none; }
+            code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
+        {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset("js/jquery-3.3.1.min.js") }}"></script>
+            <script src="{{ asset("js/highcharts-6.0.6/highcharts.js") }}"></script>
+            <script src="{{ asset("js/highcharts-6.0.6/modules/boost.js") }}"></script>
+            <script src="{{ asset("js/highcharts-6.0.6/modules/series-label.js") }}"></script>
+            <script src="{{ asset("js/highcharts-6.0.6/modules/exporting.js") }}"></script>
+        {% endblock %}
     </body>
 </html>

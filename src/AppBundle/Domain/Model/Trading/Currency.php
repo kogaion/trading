@@ -11,6 +11,7 @@ namespace AppBundle\Domain\Model\Trading;
 
 class Currency
 {
+
     /**
      * @var string 3 letter code
      */

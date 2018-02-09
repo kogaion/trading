@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div id="wrapper">
+        <div id="container">
+            <div id="welcome">
+                <h1><span>Welcome to</span> Bonds</h1>
+            </div>
+            <div id="serieslabelspercent"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        {{ parent() }}
+
+        #serieslabelspercent { min-width: 400px; height: 600px; margin: 0 auto; }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            Highcharts.chart('serieslabelspercent', {
+                chart: {
+                    type: 'spline'
+                },
+                title: {
+                    text: 'Bonds profit evolution'
+                },
+                subtitle: {
+                    text: 'Period: {{ startDate|e('js') }} - {{ endDate|e('js') }}'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: { // don't display the dummy year
+                        month: '%b %e, %Y',
+                        year: '%y'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Profit ratio (%)'
+                    },
+                    plotLines: [{
+                        color:'#000000',
+                        value: 0,
+                        width: 2
+                    }],
+                    softMin: 0
+                    //min: 0
+                },
+                tooltip: {
+                    split: true,
+                    useHTML: true,
+                    formatter: function() {
+                        var s = [];
+                        s.push(Highcharts.dateFormat('%b %e, %Y', this.x));
+                        $.each(this.points, function() {
+                            s.push('<b>' + this.point.series.name + '</b>'
+                                + ('undefined' !== typeof this.point.initial
+                                    ? ' (' + Highcharts.numberFormat(this.point.initial, 2) + ' ' + this.point.currency + ')'
+                                    : '') + '<br />'
+                                + Highcharts.dateFormat('%b %e, %Y', this.point.x) + ': <b>' + Highcharts.numberFormat(this.point.y, 2) + '%</b> '
+                                + ('undefined' !== typeof this.point.amount
+                                    ? ' (' + Highcharts.numberFormat(this.point.amount, 2) + ' ' + this.point.currency + ')'
+                                    : ''
+                                )
+                            );
+                        });
+                        return s;
+                    }
+                },
+
+                plotOptions: {
+                    spline: {
+                        marker: {
+                            enabled: true
+                        }
+                    }
+                },
+
+                series: {{ series|json_encode|raw }}
+            });
+        });
+    </script>
+{% endblock %}

@@ -9,13 +9,17 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
-use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Evolution;
 
 class EvolutionService
 {
-    public static function makeEvolution(\DateTime $date, Amount $amount)
+    /**
+     * @param \DateTime $date
+     * @param float $amount
+     * @return Evolution
+     */
+    public static function makeEvolution(\DateTime $date, $amount)
     {
-        return (new Evolution())->setDate($date)->setAmount($amount);
+        return (new Evolution())->setDate($date)->setValue($amount);
     }
 }
