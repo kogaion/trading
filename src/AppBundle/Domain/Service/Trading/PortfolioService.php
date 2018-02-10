@@ -52,6 +52,18 @@ class PortfolioService
     }
 
     /**
+     * @return Portfolio[]
+     */
+    public function listPortfolio()
+    {
+        $portfolio = [];
+        foreach ($this->loadPortfolio() as $symbol => $details) {
+            $portfolio[$symbol] = $this->buildPortfolio($symbol);
+        }
+        return $portfolio;
+    }
+
+    /**
      * @param $principalSymbol
      * @return mixed
      * @todo load from Repository

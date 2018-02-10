@@ -33,7 +33,13 @@ class PortfolioTest extends TestCase
         $unitPrice = Mockery::spy(Amount::class)->makePartial()->setValue(10)->setCurrency($currency);
 
         $portfolio = (new Portfolio())->setUnitPrice($unitPrice)->setBalance(100);
+        $this->assertEquals(100 * 10, $portfolio->getPrice()->getValue());
 
-        $this->assertEquals($portfolio->getBalance() * $portfolio->getUnitPrice()->getValue(), $portfolio->getPrice()->getValue());
+        $portfolio->setBalance(740);
+        $this->assertEquals(740 * 10, $portfolio->getPrice()->getValue());
+
+        $unitPrice->setValue(16);
+        $portfolio->setUnitPrice($unitPrice);
+        $this->assertEquals(740 * 16, $portfolio->getPrice()->getValue());
     }
 }

@@ -56,9 +56,8 @@ class BondsServiceTest extends TestCase
         $principals = $this->bondsService->listBonds();
 
         $this->assertCount(count($bonds), $principals);
-        $this->assertInstanceOf(PrincipalBonds::class, $principals[$bondsSymbol]);
         $this->assertArrayHasKey($bondsSymbol, $principals);
-
+        $this->assertInstanceOf(PrincipalBonds::class, $principals[$bondsSymbol]);
     }
 
     public function testBuilderThrowsExceptionForInvalidBondsSymbol()
