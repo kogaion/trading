@@ -14,24 +14,12 @@ use AppBundle\Domain\Model\Util\DateTimeInterval;
 
 class InflationService
 {
-    const DATE_FORMAT = 'Y-m-d';
-    /**
-     * @var array
-     * @todo Extract from repository
-     */
-    protected static $ratios = [
-        '2018-01-01' => 2,
-        '2018-02-01' => 3,
-        '2018-05-01' => 3.6,
-        '2018-08-01' => 4,
-    ];
-
     /**
      * @param $ratio
      * @param \DateTime $date
      * @return Inflation
      */
-    public static function makeInflation($ratio, \DateTime $date)
+    public function makeInflation($ratio, \DateTime $date)
     {
         return (new Inflation())->setRatio($ratio)->setDate($date);
     }
@@ -39,16 +27,16 @@ class InflationService
     /**
      * @param \DateTime $forDate
      * @return Inflation
-     * @todo load from Repository
      */
-    public static function buildInflation(\DateTime $forDate)
+    public function buildInflation(\DateTime $forDate)
     {
-        $dateFormatted = $forDate->format(self::DATE_FORMAT);
-        if (array_key_exists($dateFormatted, self::$ratios)) {
-            return self::$ratios[$dateFormatted];
+        $inflating = $this->loadInflating();
+        $dateFormatted = $forDate->format('U');
+
+        if (array_key_exists($dateFormatted, $inflating)) {
+            return $this->makeInflation($inflating[$dateFormatted], clone $forDate) ;
         }
 
-        $inflating = self::$ratios;
         $inflating[$dateFormatted] = 0;
         ksort($inflating);
 
@@ -64,19 +52,31 @@ class InflationService
             }
         }
 
-        return self::makeInflation($ratio, clone $forDate);
+        return $this->makeInflation($ratio, clone $forDate);
     }
 
     /**
      * @return Inflation[]
-     * @todo extract from Repository
      */
     public function listInflating()
     {
         $inflating = [];
-        foreach (self::$ratios as $ratioDate => $ratioValue) {
-            $inflating[] = self::makeInflation($ratioValue, DateTimeInterval::getDate($ratioDate));
+        foreach ($this->loadInflating() as $ratioDate => $ratioValue) {
+            $inflating[] = $this->makeInflation($ratioValue, \DateTime::createFromFormat('U', $ratioDate));
         }
         return $inflating;
+    }
+
+    /**
+     * @return array
+     */
+    protected function loadInflating()
+    {
+        return [
+            DateTimeInterval::getDate('2018-01-01')->format('U') => 2,
+            DateTimeInterval::getDate('2018-02-01')->format('U') => 3,
+            DateTimeInterval::getDate('2018-05-01')->format('U') => 3.6,
+            DateTimeInterval::getDate('2018-08-01')->format('U') => 4,
+        ];
     }
 }

@@ -15,20 +15,15 @@ use AppBundle\Domain\Model\Util\DateTimeInterval;
 
 class PortfolioService
 {
-    const DEFAULT_CURRENCY = 'LEI';
-
     /**
-     * @var array
-     * @todo load from repository
+     * @var AmountService
      */
-    protected static $bondsPortfolio = [
-        'SBG20' => [100, 104.5, 'LEI', 'today'],
-        'ADRS18' => [27, 110, 'LEI', 'today'],
-        'BNET19' => [11, 104, 'LEI', 'today'],
-        'CFS18' => [1, 100.03, 'LEI', 'today'],
-        'FRU21' => [500, 104, 'LEI', 'today'],
-        'INV22' => [20, 105, 'LEI', 'today'],
-    ];
+    protected $amountService;
+
+    public function __construct(AmountService $amountService)
+    {
+        $this->amountService = $amountService;
+    }
 
     /**
      * @param int $balance
@@ -36,27 +31,54 @@ class PortfolioService
      * @param \DateTime $acquisitionDate
      * @return Portfolio
      */
-    public static function makePortfolio($balance, Amount $unitPrice, \DateTime $acquisitionDate)
+    public function makePortfolio($balance, Amount $unitPrice, \DateTime $acquisitionDate)
     {
         return (new Portfolio())->setUnitPrice($unitPrice)->setBalance($balance)->setAcquisitionDate($acquisitionDate);
     }
 
     /**
-     * @param $bondsSymbol
+     * @param $principalSymbol
      * @return Portfolio
      * @todo Load from Repository
      */
-    public function buildPortfolio($bondsSymbol)
+    public function buildPortfolio($principalSymbol)
     {
-        if (!array_key_exists($bondsSymbol, self::$bondsPortfolio)) {
-            return PortfolioService::makePortfolio(0, AmountService::buildAmount(0, self::DEFAULT_CURRENCY), DateTimeInterval::getToday());
+        $principalPortfolio = $this->searchPortfolio($principalSymbol);
+        return $this->makePortfolio(
+            $principalPortfolio[0],
+            $this->amountService->buildAmount($principalPortfolio[1], $principalPortfolio[2]),
+            DateTimeInterval::getDate($principalPortfolio[3])
+        );
+    }
+
+    /**
+     * @param $principalSymbol
+     * @return mixed
+     * @todo load from Repository
+     */
+    protected function searchPortfolio($principalSymbol)
+    {
+        $portfolio = $this->loadPortfolio();
+        if (!array_key_exists($principalSymbol, $portfolio)) {
+            return [0, 0, CurrencyService::DEFAULT_CURRENCY, 'today'];
         }
 
-        $bondsPortfolio = self::$bondsPortfolio[$bondsSymbol];
-        return PortfolioService::makePortfolio(
-            $bondsPortfolio[0],
-            AmountService::buildAmount($bondsPortfolio[1], $bondsPortfolio[2]),
-            DateTimeInterval::getDate($bondsPortfolio[3])
-        );
+        return $portfolio[$principalSymbol];
+    }
+
+    /**
+     * @return array
+     * @todo load from repository
+     */
+    protected function loadPortfolio()
+    {
+        return [
+            'SBG20' => [100, 104.5, 'LEI', 'today'],
+            'ADRS18' => [27, 110, 'LEI', 'today'],
+            'BNET19' => [11, 104, 'LEI', 'today'],
+            'CFS18' => [1, 100.03, 'LEI', 'today'],
+            'FRU21' => [500, 104, 'LEI', 'today'],
+            'INV22' => [20, 105, 'LEI', 'today'],
+        ];
     }
 }

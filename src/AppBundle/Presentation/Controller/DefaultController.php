@@ -2,6 +2,8 @@
 
 namespace AppBundle\Presentation\Controller;
 
+use AppBundle\Domain\Model\Trading\Amount;
+use AppBundle\Domain\Service\Trading\CurrencyService;
 use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Service\Trading\AmountService;
@@ -16,12 +18,15 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $currency = 'LEI';
-        $interest = InterestService::makeInterest(12, new \DateInterval('P1Y'));
-        $amount = AmountService::buildAmount(4500, $currency);
-        $evaluationInterval = DateTimeInterval::getToday()->diff(new \DateTime('2018-12-31'));
+        $currencyService = new CurrencyService();
+        $amountService = new AmountService($currencyService);
+        $interestService = new InterestService($amountService);
 
-        $interestService = new InterestService();
+        $currency = 'LEI';
+        $interest = $interestService->makeInterest(12, new \DateInterval('P1Y'));
+        $amount = $amountService->buildAmount(4500, $currency);
+        $evaluationInterval = DateTimeInterval::getToday()->diff(DateTimeInterval::getDate('2018-12-31'));
+
         $amountFromInterest = $interestService->getInterestForInterval($amount, $interest, $evaluationInterval);
 
         // replace this example code with whatever you need

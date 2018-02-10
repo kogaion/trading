@@ -39,11 +39,28 @@ class BondsEvolutionService
      * @var InterestService
      */
     protected $interestService;
+    /**
+     * @var EvolutionService
+     */
+    private $evolutionService;
+    /**
+     * @var PortfolioService
+     */
+    private $portfolioService;
 
-    public function __construct(AmountService $amountService, InterestService $interestService)
+    /**
+     * BondsEvolutionService constructor.
+     * @param AmountService $amountService
+     * @param InterestService $interestService
+     * @param EvolutionService $evolutionService
+     * @param PortfolioService $portfolioService
+     */
+    public function __construct(AmountService $amountService, InterestService $interestService, EvolutionService $evolutionService, PortfolioService $portfolioService)
     {
         $this->amountService = $amountService;
         $this->interestService = $interestService;
+        $this->evolutionService = $evolutionService;
+        $this->portfolioService = $portfolioService;
     }
 
     /**
@@ -80,14 +97,14 @@ class BondsEvolutionService
         $curDate = clone $fromDate;
         while (true) {
             $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-            $return[] = EvolutionService::makeEvolution(clone $curDate, $amount->getValue());
+            $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount->getValue());
 
             $curDate = $curDate->add($interval);
             if ($curDate->format('U') >= $toDate->format('U')) {
                 $curDate = clone $toDate;
 
                 $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-                $return[] = EvolutionService::makeEvolution(clone $curDate, $amount->getValue());
+                $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount->getValue());
 
                 break;
             }
@@ -117,7 +134,7 @@ class BondsEvolutionService
      */
     protected function getPrincipalPortfolio()
     {
-        return PortfolioService::makePortfolio(
+        return $this->portfolioService->makePortfolio(
             $this->portfolio->getBalance(),
             $this->principal->getFaceValue(),
             $this->portfolio->getAcquisitionDate()

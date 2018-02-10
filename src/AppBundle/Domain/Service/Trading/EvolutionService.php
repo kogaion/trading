@@ -18,7 +18,7 @@ class EvolutionService
      * @param float $amount
      * @return Evolution
      */
-    public static function makeEvolution(\DateTime $date, $amount)
+    public function makeEvolution(\DateTime $date, $amount)
     {
         return (new Evolution())->setDate($date)->setValue($amount);
     }

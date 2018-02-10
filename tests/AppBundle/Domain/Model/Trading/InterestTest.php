@@ -1,4 +1,6 @@
 <?php
+
+namespace Tests\AppBundle\Domain\Model\Trading;
 /**
  * Created by PhpStorm.
  * User: Kogaion
@@ -6,9 +8,12 @@
  * Time: 9:22 PM
  */
 
-use \AppBundle\Domain\Model\Trading\Interest;
+use AppBundle\Domain\Model\Trading\Interest;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
+use Mockery;
+use Tests\AppBundle\TestCase;
 
-class InterestTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
+class InterestTest extends TestCase
 {
     public function testInterestIsRecalculatedWithEachInterval()
     {
@@ -34,7 +39,7 @@ class InterestTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
     {
         $interval = new \DateInterval('P1Y');
         $percent = 9;
-        $date = new \DateTime();
+        $date = DateTimeInterval::getToday();
         $daysInYear = 365 + (int) $date->format("L");
 
         $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);

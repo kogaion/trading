@@ -16,11 +16,25 @@ use AppBundle\Domain\Model\Util\InvalidArgumentException;
 class AmountService
 {
     /**
+     * @var CurrencyService
+     */
+    protected $currencyService;
+
+    /**
+     * AmountService constructor.
+     * @param CurrencyService $currencyService
+     */
+    public function __construct(CurrencyService $currencyService)
+    {
+        $this->currencyService = $currencyService;
+    }
+
+    /**
      * @param float $value
      * @param Currency $currency
      * @return Amount
      */
-    public static function makeAmount($value, $currency)
+    public function makeAmount($value, $currency)
     {
         return (new Amount())->setValue($value)->setCurrency($currency);
     }
@@ -32,20 +46,9 @@ class AmountService
      * @return Amount
      * @throws InvalidArgumentException
      */
-    public static function buildAmount($value, $currencySymbol)
+    public function buildAmount($value, $currencySymbol)
     {
-        /**
-         * @todo - get from Repository
-         */
-        static $currencyPrecision = [
-            'LEI' => 2,
-            'USD' => 2,
-            'EUR' => 2,
-        ];
-        if (!array_key_exists($currencySymbol, $currencyPrecision)) {
-            throw new InvalidArgumentException("Invalid currency: {$currencySymbol}", InvalidArgumentException::ERR_CURRENCY_INVALID);
-        }
-        return (new Amount())->setValue($value)->setCurrency(CurrencyService::makeCurrency($currencySymbol, $currencyPrecision[$currencySymbol]));
+        return (new Amount())->setValue($value)->setCurrency($this->currencyService->buildCurrency($currencySymbol));
     }
 
 }

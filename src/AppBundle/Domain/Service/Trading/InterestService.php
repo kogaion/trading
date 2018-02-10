@@ -15,11 +15,25 @@ use AppBundle\Domain\Model\Trading\Interest;
 class InterestService
 {
     /**
+     * @var AmountService
+     */
+    protected $amountService;
+
+    /**
+     * InterestService constructor.
+     * @param AmountService $amountService
+     */
+    public function __construct(AmountService $amountService)
+    {
+        $this->amountService = $amountService;
+    }
+
+    /**
      * @param int $percent
      * @param \DateInterval $interval
      * @return Interest
      */
-    public static function makeInterest($percent, \DateInterval $interval)
+    public function makeInterest($percent, \DateInterval $interval)
     {
         return (new Interest())->setPercent($percent)->setInterval($interval);
     }
@@ -32,10 +46,10 @@ class InterestService
      */
     public function getInterestForInterval(Amount $amount, Interest $interest, \DateInterval $evaluationInterval)
     {
-        $evaluatedInterest = InterestService::makeInterest($interest->getPercent(), $interest->getInterval());
+        $evaluatedInterest = $this->makeInterest($interest->getPercent(), $interest->getInterval());
         $evaluatedInterest->setInterval($evaluationInterval);
 
-        return AmountService::makeAmount(
+        return $this->amountService->makeAmount(
             round($evaluatedInterest->getPercent() * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
             $amount->getCurrency()
         );

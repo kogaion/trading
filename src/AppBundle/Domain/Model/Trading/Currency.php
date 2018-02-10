@@ -11,7 +11,6 @@ namespace AppBundle\Domain\Model\Trading;
 
 class Currency
 {
-
     /**
      * @var string 3 letter code
      */
@@ -36,10 +35,7 @@ class Currency
      */
     public function setSymbol($symbol)
     {
-        if (!empty($symbol) && strlen($symbol) == 3) {
-            $this->symbol = strtoupper($symbol);
-        }
-
+        $this->symbol = strtoupper($symbol);
         return $this;
     }
 
@@ -49,9 +45,7 @@ class Currency
      */
     public function setPrecision($precision)
     {
-        if (null !== $precision) {
-            $this->precision = (int) $precision;
-        }
+        $this->precision = (int) $precision;
         return $this;
     }
 

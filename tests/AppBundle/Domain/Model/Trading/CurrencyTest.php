@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\AppBundle\Domain\Model\Trading;
+
 /**
  * Created by PhpStorm.
  * User: Kogaion
@@ -8,33 +10,22 @@
  */
 
 use AppBundle\Domain\Model\Trading\Currency;
+use Tests\AppBundle\TestCase;
 
-class CurrencyTest extends \Symfony\Bundle\FrameworkBundle\Tests\TestCase
+class CurrencyTest extends TestCase
 {
     public function testCurrencySymbolIsUpperCase()
     {
-        $currency = Mockery::spy(Currency::class)->makePartial();
-
+        $currency = new Currency;
         $currency->setSymbol('lei');
 
         $this->assertEquals('LEI', $currency->getSymbol());
         $this->assertNotEquals('lei', $currency->getSymbol());
     }
 
-    public function testCurrencySymbolAcceptsThreeLettersOnly()
-    {
-        $currency = Mockery::spy(Currency::class)->makePartial();
-        $currency->setSymbol('USD');
-
-        $this->assertEquals('USD', $currency->getSymbol());
-
-        $currency->setSymbol('abcd');
-        $this->assertEquals('USD', $currency->getSymbol());
-    }
-
     public function testCurrencyPrecisionIsInteger()
     {
-        $currency = Mockery::spy(Currency::class)->makePartial();
+        $currency = new Currency;
 
         $currency->setPrecision(2);
         $this->assertEquals(2, $currency->getPrecision());

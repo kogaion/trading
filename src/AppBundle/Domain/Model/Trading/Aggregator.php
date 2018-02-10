@@ -19,4 +19,40 @@ class Aggregator
      * @var Principal[]
      */
     protected $principals;
+
+    /**
+     * @param string $code
+     * @return Aggregator
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param Principal[] $principals
+     * @return Aggregator
+     */
+    public function setPrincipals($principals)
+    {
+        $this->principals = $principals;
+        return $this;
+    }
+
+    /**
+     * @return Principal[]
+     */
+    public function getPrincipals()
+    {
+        return $this->principals;
+    }
 }

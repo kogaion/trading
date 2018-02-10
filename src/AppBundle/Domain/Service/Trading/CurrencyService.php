@@ -10,17 +10,50 @@ namespace AppBundle\Domain\Service\Trading;
 
 
 use AppBundle\Domain\Model\Trading\Currency;
+use AppBundle\Domain\Model\Util\InvalidArgumentException;
 
 
 class CurrencyService
 {
+    const DEFAULT_CURRENCY = 'LEI';
+
     /**
-     * @param string $symbol
-     * @param int|null $precision
+     * @param string $currencySymbol
      * @return Currency
      */
-    public static function makeCurrency($symbol, $precision = 2)
+    public function buildCurrency($currencySymbol)
     {
-        return (new Currency())->setSymbol($symbol)->setPrecision($precision);
+        $currencyPrecision = $this->searchCurrency($currencySymbol);
+        return (new Currency())->setSymbol($currencySymbol)->setPrecision($currencyPrecision[$currencySymbol]);
     }
+
+    /**
+     * @param $currencySymbol
+     * @return mixed
+     * @throws InvalidArgumentException
+     * @todo search in repository
+     */
+    protected function searchCurrency($currencySymbol)
+    {
+        $currencies = $this->loadCurrencies();
+        if (!array_key_exists($currencySymbol, $currencies)) {
+            throw new InvalidArgumentException("Invalid currency: {$currencySymbol}", InvalidArgumentException::ERR_CURRENCY_INVALID);
+        }
+
+        return $currencies[$currencySymbol];
+    }
+
+    /**
+     * @return array
+     * @todo Load from repository
+     */
+    protected function loadCurrencies()
+    {
+        return [
+            'LEI' => 2,
+            'USD' => 2,
+            'EUR' => 2,
+        ];
+    }
+
 }

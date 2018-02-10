@@ -10,57 +10,88 @@ namespace AppBundle\Domain\Service\Trading;
 
 
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 
 class BondsService
 {
     /**
-     * @var array
-     * @todo Load from repository
+     * @var AmountService
      */
-    protected static $principals = [
-        'SBG20' => ['SBG20', 12, 'P1Y', 100, 'LEI', '2020-01-15'],
-        'FRU21' => ['FRU21', 9, 'P1Y', 100, 'LEI', '2021-03-14'],
-        'CFS18' => ['CFS18', 8, 'P1Y', 100, 'LEI', '2018-11-27'],
-        'BNET22' => ['CFS18', 9, 'P1Y', 100, 'LEI', '2022-09-08'],
-        'BNET19' => ['BNET19', 9, 'P1Y', 100, 'LEI', '2019-06-15'],
-        'ADRS18' => ['ADRS18', 10, 'P1Y', 100, 'LEI', '2018-10-23'],
-        'INV22' => ['INV22', 7, 'P1Y', 100, 'LEI', '2022-03-23'],
-    ];
+    protected $amountService;
+    /**
+     * @var InterestService
+     */
+    protected $interestService;
 
     /**
-     * @param $symbol
-     * @return PrincipalBonds
-     * @throws InvalidArgumentException
-     * @todo return PrincipalBonds or PrincipalShares
+     * BondsService constructor.
+     * @param AmountService $amountService
+     * @param InterestService $interestService
      */
-    public static function buildBonds($symbol)
+    public function __construct(AmountService $amountService, InterestService $interestService)
     {
-        /**
-         * @todo load bond from Repository
-         */
-        if (!array_key_exists($symbol, self::$principals)) {
-            throw new InvalidArgumentException("Invalid bonds: {$symbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
-        }
+        $this->amountService = $amountService;
+        $this->interestService = $interestService;
+    }
 
-        $principal = self::$principals[$symbol];
+    /**
+     * @param $bondsSymbol
+     * @return PrincipalBonds
+     */
+    public function buildBonds($bondsSymbol)
+    {
+        $principal = $this->searchBonds($bondsSymbol);
         return (new PrincipalBonds())
             ->setSymbol($principal[0])
-            ->setInterest(InterestService::makeInterest($principal[1], new \DateInterval($principal[2])))
-            ->setFaceValue(AmountService::buildAmount($principal[3], $principal[4]))
-            ->setMaturityDate(new \DateTime($principal[5]));
+            ->setInterest($this->interestService->makeInterest($principal[1], new \DateInterval($principal[2])))
+            ->setFaceValue($this->amountService->buildAmount($principal[3], $principal[4]))
+            ->setMaturityDate(DateTimeInterval::getDate($principal[5]));
     }
 
     /**
      * @return PrincipalBonds[]
-     * @todo extract from Repository
      */
     public function listBonds()
     {
         $bonds = [];
-        foreach (self::$principals as $bondsSymbol => $bondsDetails) {
-            $bonds[$bondsSymbol] = self::buildBonds($bondsSymbol);
+        foreach ($this->loadBonds() as $bondsSymbol => $bondsDetails) {
+            $bonds[$bondsSymbol] = $this->buildBonds($bondsSymbol);
         }
         return $bonds;
+    }
+
+    /**
+     * @param $bondsSymbol
+     * @return mixed
+     * @throws InvalidArgumentException
+     * @todo search in Repository
+     */
+    protected function searchBonds($bondsSymbol)
+    {
+        $bonds = $this->loadBonds();
+
+        if (!array_key_exists($bondsSymbol, $bonds)) {
+            throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
+        }
+
+        return $bonds[$bondsSymbol];
+    }
+
+    /**
+     * @return array
+     * @todo load from Repository
+     */
+    protected function loadBonds()
+    {
+        return [
+            'SBG20' => ['SBG20', 12, 'P1Y', 100, 'LEI', '2020-01-15'],
+            'FRU21' => ['FRU21', 9, 'P1Y', 100, 'LEI', '2021-03-14'],
+            'CFS18' => ['CFS18', 8, 'P1Y', 100, 'LEI', '2018-11-27'],
+            'BNET22' => ['CFS18', 9, 'P1Y', 100, 'LEI', '2022-09-08'],
+            'BNET19' => ['BNET19', 9, 'P1Y', 100, 'LEI', '2019-06-15'],
+            'ADRS18' => ['ADRS18', 10, 'P1Y', 100, 'LEI', '2018-10-23'],
+            'INV22' => ['INV22', 7, 'P1Y', 100, 'LEI', '2022-03-23'],
+        ];
     }
 }

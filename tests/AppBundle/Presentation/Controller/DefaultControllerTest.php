@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Presentation\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {

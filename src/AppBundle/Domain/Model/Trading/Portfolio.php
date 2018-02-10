@@ -20,7 +20,7 @@ class Portfolio
     /**
      * @var int
      */
-    protected $balance;
+    protected $balance = 1;
     /**
      * @var Amount
      */
@@ -76,14 +76,16 @@ class Portfolio
         return $this->price;
     }
 
+    /**
+     * @return $this
+     */
     protected function setPrice()
     {
-        if (null !== $this->unitPrice) {
-            $this->price = AmountService::makeAmount(
-                $this->getUnitPrice()->getValue() * $this->getBalance(),
-                $this->getUnitPrice()->getCurrency()
-            );
+        if (null !== $this->unitPrice && null !== $this->balance) {
+            $this->price = clone $this->unitPrice;
+            $this->price->setValue($this->getBalance() * $this->unitPrice->getValue());
         }
+
         return $this;
     }
 
