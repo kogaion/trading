@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\AppBundle\Domain\Model\Trading;
+
 /**
  * Created by PhpStorm.
  * User: Kogaion
@@ -40,7 +41,7 @@ class InterestTest extends TestCase
         $interval = new \DateInterval('P1Y');
         $percent = 9;
         $date = DateTimeInterval::getToday();
-        $daysInYear = 365 + (int) $date->format("L");
+        $daysInYear = 365 + (int)$date->format("L");
 
         $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
 

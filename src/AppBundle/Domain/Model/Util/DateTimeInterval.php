@@ -9,7 +9,6 @@
 namespace AppBundle\Domain\Model\Util;
 
 
-
 class DateTimeInterval
 {
     /**

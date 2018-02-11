@@ -34,7 +34,7 @@ class InflationService
         $dateFormatted = $forDate->format('U');
 
         if (array_key_exists($dateFormatted, $inflating)) {
-            return $this->makeInflation($inflating[$dateFormatted], clone $forDate) ;
+            return $this->makeInflation($inflating[$dateFormatted], clone $forDate);
         }
 
         $inflating[$dateFormatted] = 0;

@@ -20,9 +20,8 @@ use Mockery\Mock;
  * Date: 2/10/2018
  * Time: 5:00 PM
  */
-
 class TestCase extends
-        \Symfony\Bundle\FrameworkBundle\Tests\TestCase
+    \Symfony\Bundle\FrameworkBundle\Tests\TestCase
 //        WebTestCase
 {
     /**
@@ -62,7 +61,8 @@ class TestCase extends
      */
     protected $inflationEvolutionService;
 
-    public function tearDown() {
+    public function tearDown()
+    {
         Mockery::close();
         parent::tearDown();
     }

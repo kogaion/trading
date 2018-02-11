@@ -13,7 +13,8 @@ use Mockery;
 
 class WebTestCase extends \Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 {
-    public function tearDown() {
+    public function tearDown()
+    {
         Mockery::close();
     }
 }

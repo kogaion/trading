@@ -45,7 +45,7 @@ class Currency
      */
     public function setPrecision($precision)
     {
-        $this->precision = (int) $precision;
+        $this->precision = (int)$precision;
         return $this;
     }
 

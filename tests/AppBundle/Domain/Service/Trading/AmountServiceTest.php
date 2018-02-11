@@ -13,7 +13,6 @@ use Tests\AppBundle\TestCase;
  * Date: 2/10/2018
  * Time: 1:14 PM
  */
-
 class AmountServiceTest extends TestCase
 {
     public function testBuilderReturnsAmount()

@@ -40,9 +40,9 @@ class BondsEvolutionServiceTest extends TestCase
 
         $this->assertInternalType('array', $evolutions);
         $this->assertInstanceOf(Evolution::class, $evolutions[0]);
-        $this->assertCount((int) ceil(148 / 2) + 1, $evolutions);
+        $this->assertCount((int)ceil(148 / 2) + 1, $evolutions);
 
-        for ($i = 0, $cnt = count($evolutions); $i < $cnt; $i ++) {
+        for ($i = 0, $cnt = count($evolutions); $i < $cnt; $i++) {
             $this->assertEquals(75 * 101.1 - 75 * 105.5 + 75 * 101.1 * 15 / 100 * $i * (2 / 7), $evolutions[$i]->getValue(), 'Iteration: ' . $i);
             $this->assertEquals(DateTimeInterval::getDate("today + " . ($i * 2) . " days"), $evolutions[$i]->getDate(), 'Iteration: ' . $i);
         }
@@ -70,7 +70,7 @@ class BondsEvolutionServiceTest extends TestCase
         $evolutionInterval = new \DateInterval('P2D');
         $evolutions = $this->bondsEvolutionService->getEvolution($fromDate, $evolutionInterval);
 
-        $lastIndex = (int) ceil(249 / 2);
+        $lastIndex = (int)ceil(249 / 2);
 
         $this->assertInternalType('array', $evolutions);
         $this->assertInstanceOf(Evolution::class, $evolutions[0]);
