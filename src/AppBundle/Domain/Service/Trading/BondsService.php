@@ -9,6 +9,8 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
+use AppBundle\Domain\Model\Trading\Amount;
+use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
@@ -36,17 +38,34 @@ class BondsService
     }
 
     /**
+     * @param string $symbol
+     * @param Interest $interest
+     * @param Amount $faceValue
+     * @param \DateTime $maturityDate
+     * @return PrincipalBonds
+     */
+    public function makeBonds($symbol, Interest $interest, Amount $faceValue, \DateTime $maturityDate)
+    {
+        return (new PrincipalBonds())
+            ->setSymbol($symbol)
+            ->setInterest($interest)
+            ->setFaceValue($faceValue)
+            ->setMaturityDate($maturityDate);
+    }
+
+    /**
      * @param $bondsSymbol
      * @return PrincipalBonds
      */
     public function buildBonds($bondsSymbol)
     {
         $principal = $this->searchBonds($bondsSymbol);
-        return (new PrincipalBonds())
-            ->setSymbol($principal[0])
-            ->setInterest($this->interestService->makeInterest($principal[1], new \DateInterval($principal[2])))
-            ->setFaceValue($this->amountService->buildAmount($principal[3], $principal[4]))
-            ->setMaturityDate(DateTimeInterval::getDate($principal[5]));
+        return $this->makeBonds(
+            $principal[0],
+            $this->interestService->makeInterest($principal[1], new \DateInterval($principal[2])),
+            $this->amountService->buildAmount($principal[3], $principal[4]),
+            DateTimeInterval::getDate($principal[5])
+        );
     }
 
     /**

@@ -19,7 +19,7 @@ use AppBundle\Domain\Service\Trading\EvolutionService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
 
 
-class BondsEvolutionService
+class   BondsEvolutionService
 {
     /**
      * @var PrincipalBonds

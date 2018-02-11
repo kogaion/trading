@@ -10,12 +10,7 @@ namespace Tests\AppBundle\Domain\Service\Trading;
  */
 
 
-use AppBundle\Domain\Model\Trading\Amount;
-use AppBundle\Domain\Model\Trading\Currency;
-use AppBundle\Domain\Model\Trading\Interest;
-use AppBundle\Domain\Model\Util\DateTimeInterval;
-use Mockery;
-use Symfony\Component\Validator\Constraints\DateTime;
+use AppBundle\Domain\Service\Trading\CurrencyService;
 use Tests\AppBundle\TestCase;
 
 
@@ -23,23 +18,36 @@ class InterestServiceTest extends TestCase
 {
     public function testInterestAmountChangesWithTheInterval()
     {
-        $interval = new \DateInterval('P1Y');
+        $interval = new \DateInterval('P120D');
         $percent = 9;
-        $date = DateTimeInterval::getToday();
-        $daysInYear = 365 + (int) $date->format("L");
+        $value = 15;
 
-        $currency = Mockery::spy(Currency::class)->makePartial();
-        $amount = Mockery::spy(Amount::class)->makePartial()->setValue($daysInYear)->setCurrency($currency);
-        $interest = Mockery::spy(Interest::class)->makePartial()->setPercent($percent)->setInterval($interval);
+        $amount = $this->amountService->buildAmount($value, CurrencyService::DEFAULT_CURRENCY);
+        $interest = $this->interestService->makeInterest($percent, $interval);
 
         $this->assertEquals(
-            $percent * $amount->getValue() / 100,
+            $percent * $value / 100,
             $this->interestService->getInterestForInterval($amount, $interest, $interval)->getValue()
         );
 
         $this->assertEquals(
-            $percent * $amount->getValue() / 100 / $daysInYear * 2,
-            $this->interestService->getInterestForInterval($amount, $interest, new \DateInterval('P2D'))->getValue()
+            $percent * $value / 100 * 60 / 120,
+            $this->interestService->getInterestForInterval($amount, $interest, new \DateInterval('P60D'))->getValue()
+        );
+
+        $this->assertEquals(
+            $percent * $value / 100 * 5 / 120,
+            $this->interestService->getInterestForInterval($amount, $interest, new \DateInterval('P5D'))->getValue()
+        );
+
+        $this->assertEquals(
+            $percent * $value / 100,
+            $this->interestService->getInterestForInterval($amount, $interest, new \DateInterval('P120D'))->getValue()
+        );
+
+        $this->assertEquals(
+            $percent * $value / 100 * 255 / 120,
+            $this->interestService->getInterestForInterval($amount, $interest, new \DateInterval('P255D'))->getValue()
         );
     }
 }

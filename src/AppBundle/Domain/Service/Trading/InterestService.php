@@ -29,7 +29,7 @@ class InterestService
     }
 
     /**
-     * @param int $percent
+     * @param float $percent
      * @param \DateInterval $interval
      * @return Interest
      */
@@ -46,11 +46,11 @@ class InterestService
      */
     public function getInterestForInterval(Amount $amount, Interest $interest, \DateInterval $evaluationInterval)
     {
-        $evaluatedInterest = $this->makeInterest($interest->getPercent(), $interest->getInterval());
+        $evaluatedInterest = clone $interest;
         $evaluatedInterest->setInterval($evaluationInterval);
 
         return $this->amountService->makeAmount(
-            round($evaluatedInterest->getPercent() * $amount->getValue() / 100, $amount->getCurrency()->getPrecision()),
+            $evaluatedInterest->getPercent() * $amount->getValue() / 100,
             $amount->getCurrency()
         );
     }

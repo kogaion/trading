@@ -2,6 +2,8 @@
 
 namespace Tests\AppBundle;
 
+use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
+use AppBundle\Domain\Service\Reporting\InflationEvolutionService;
 use AppBundle\Domain\Service\Trading\AmountService;
 use AppBundle\Domain\Service\Trading\BondsService;
 use AppBundle\Domain\Service\Trading\CurrencyService;
@@ -20,8 +22,8 @@ use Mockery\Mock;
  */
 
 class TestCase extends
-//        \Symfony\Bundle\FrameworkBundle\Tests\TestCase
-        WebTestCase
+        \Symfony\Bundle\FrameworkBundle\Tests\TestCase
+//        WebTestCase
 {
     /**
      * @var Mock
@@ -51,6 +53,14 @@ class TestCase extends
      * @var Mock
      */
     protected $inflationService;
+    /**
+     * @var Mock
+     */
+    protected $bondsEvolutionService;
+    /**
+     * @var Mock
+     */
+    protected $inflationEvolutionService;
 
     public function tearDown() {
         Mockery::close();
@@ -77,6 +87,9 @@ class TestCase extends
         $this->evolutionService = Mockery::spy(EvolutionService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $this->inflationService = Mockery::spy(InflationService::class)->makePartial()->shouldAllowMockingProtectedMethods();
 
+        $this->bondsEvolutionService = Mockery::spy(BondsEvolutionService::class, [$this->amountService, $this->interestService, $this->evolutionService, $this->portfolioService])->makePartial()->shouldAllowMockingProtectedMethods();
+        $this->inflationEvolutionService = Mockery::spy(InflationEvolutionService::class, [$this->inflationService, $this->evolutionService])->makePartial()->shouldAllowMockingProtectedMethods();
+
     }
 
     /**
@@ -85,7 +98,6 @@ class TestCase extends
      */
     protected function getServiceMock($serviceName)
     {
-        Mockery::spy();
         return (static::createClient()->getContainer()->get($serviceName . 'Mock')
             ->makePartial()
             ->shouldAllowMockingProtectedMethods());

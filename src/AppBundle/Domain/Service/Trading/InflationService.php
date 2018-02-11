@@ -69,6 +69,7 @@ class InflationService
 
     /**
      * @return array
+     * @todo load from Repository
      */
     protected function loadInflating()
     {

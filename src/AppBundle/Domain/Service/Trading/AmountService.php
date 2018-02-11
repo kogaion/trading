@@ -34,7 +34,7 @@ class AmountService
      * @param Currency $currency
      * @return Amount
      */
-    public function makeAmount($value, $currency)
+    public function makeAmount($value, Currency $currency)
     {
         return (new Amount())->setValue($value)->setCurrency($currency);
     }
@@ -48,6 +48,6 @@ class AmountService
      */
     public function buildAmount($value, $currencySymbol)
     {
-        return (new Amount())->setValue($value)->setCurrency($this->currencyService->buildCurrency($currencySymbol));
+        return $this->makeAmount($value, $this->currencyService->buildCurrency($currencySymbol));
     }
 }

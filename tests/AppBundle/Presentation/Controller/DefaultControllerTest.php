@@ -7,7 +7,7 @@ use Tests\AppBundle\WebTestCase;
 class DefaultControllerTest extends WebTestCase
 {
 
-    public function dontTestIndex()
+    public function testIndex()
     {
         return;
 

@@ -19,12 +19,22 @@ class CurrencyService
 
     /**
      * @param string $currencySymbol
+     * @param int $currencyPrecision
+     * @return Currency
+     */
+    public function makeCurrency($currencySymbol, $currencyPrecision)
+    {
+        return (new Currency())->setSymbol($currencySymbol)->setPrecision($currencyPrecision);
+    }
+
+    /**
+     * @param string $currencySymbol
      * @return Currency
      */
     public function buildCurrency($currencySymbol)
     {
         $currencyPrecision = $this->searchCurrency($currencySymbol);
-        return (new Currency())->setSymbol($currencySymbol)->setPrecision($currencyPrecision[$currencySymbol]);
+        return $this->makeCurrency($currencySymbol, $currencyPrecision[$currencySymbol]);
     }
 
     /**

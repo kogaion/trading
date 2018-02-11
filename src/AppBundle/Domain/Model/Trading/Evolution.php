@@ -18,11 +18,6 @@ class Evolution
     protected $date;
 
     /**
-     * @var Amount
-     */
-    protected $amount;
-
-    /**
      * @var float
      */
     protected $value;
