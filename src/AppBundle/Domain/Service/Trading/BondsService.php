@@ -65,7 +65,6 @@ class BondsService
      * @param $bondsSymbol
      * @return mixed
      * @throws InvalidArgumentException
-     * @todo search in Repository
      */
     protected function searchBonds($bondsSymbol)
     {

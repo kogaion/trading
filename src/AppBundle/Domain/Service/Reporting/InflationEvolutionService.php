@@ -18,11 +18,11 @@ class InflationEvolutionService
     /**
      * @var InflationService
      */
-    private $inflationService;
+    protected $inflationService;
     /**
      * @var EvolutionService
      */
-    private $evolutionService;
+    protected $evolutionService;
 
     /**
      * InflationEvolutionService constructor.

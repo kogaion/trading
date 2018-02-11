@@ -42,11 +42,11 @@ class BondsEvolutionService
     /**
      * @var EvolutionService
      */
-    private $evolutionService;
+    protected $evolutionService;
     /**
      * @var PortfolioService
      */
-    private $portfolioService;
+    protected $portfolioService;
 
     /**
      * BondsEvolutionService constructor.

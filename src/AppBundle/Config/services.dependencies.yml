@@ -1,0 +1,41 @@
+parameters:
+    #some.parameter: stuff
+
+services:
+    _defaults:
+#        autowire: true
+        autoconfigure: true
+        public: false
+
+    CurrencyService:
+        class: 'AppBundle\Domain\Service\Trading\CurrencyService'
+
+    AmountService:
+        class: 'AppBundle\Domain\Service\Trading\AmountService'
+        arguments: ['@CurrencyService']
+
+    InterestService:
+        class: 'AppBundle\Domain\Service\Trading\InterestService'
+        arguments: ['@AmountService']
+
+    BondsService:
+        class: 'AppBundle\Domain\Service\Trading\BondsService'
+        arguments: ['@AmountService', '@InterestService']
+
+    PortfolioService:
+        class: 'AppBundle\Domain\Service\Trading\PortfolioService'
+        arguments: ['@AmountService']
+
+    EvolutionService:
+        class: 'AppBundle\Domain\Service\Trading\EvolutionService'
+
+    InflationService:
+        class: 'AppBundle\Domain\Service\Trading\InflationService'
+
+    BondsEvolutionService:
+        class: 'AppBundle\Domain\Service\Reporting\BondsEvolutionService'
+        arguments: ['@AmountService', '@InterestService', '@EvolutionService', '@PortfolioService']
+
+    InflationEvolutionService:
+        class: 'AppBundle\Domain\Service\Reporting\InflationEvolutionService'
+        arguments: ['@InflationService', '@EvolutionService']

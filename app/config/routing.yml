@@ -2,10 +2,6 @@ app:
     resource: '@AppBundle/Presentation/Controller/'
     type: annotation
 
-bonds_list:
-    path: /bonds
-    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:listAction' }
-
-bonds_view:
-    path: /bonds/{bondsSymbol}
-    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }
+app_file:
+    # loads routes from the given routing file stored in some bundle
+    resource: '@AppBundle/Config/routing.yml'

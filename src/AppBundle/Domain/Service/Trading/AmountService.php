@@ -50,5 +50,4 @@ class AmountService
     {
         return (new Amount())->setValue($value)->setCurrency($this->currencyService->buildCurrency($currencySymbol));
     }
-
 }

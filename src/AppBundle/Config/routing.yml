@@ -1,0 +1,7 @@
+bonds_list:
+    path: /bonds
+    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:listAction' }
+
+bonds_view:
+    path: /bonds/{bondsSymbol}
+    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }

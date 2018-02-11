@@ -13,31 +13,19 @@ use AppBundle\Domain\Model\Trading\Evolution;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
 use AppBundle\Domain\Service\Reporting\InflationEvolutionService;
-use AppBundle\Domain\Service\Trading\AmountService;
-use AppBundle\Domain\Service\Trading\CurrencyService;
-use AppBundle\Domain\Service\Trading\EvolutionService;
-use AppBundle\Domain\Service\Trading\InflationService;
-use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
 use AppBundle\Domain\Service\Trading\BondsService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class BondsController extends Controller
 {
-
-    public function listAction()
+    public function listAction(
+        BondsService $bondsService,
+        PortfolioService $portfolioService,
+        BondsEvolutionService $bondsEvolution,
+        InflationEvolutionService $inflatingEvolution
+    )
     {
-        $currencyService = new CurrencyService();
-        $amountService = new AmountService($currencyService);
-        $interestService = new InterestService($amountService);
-        $bondsService = new BondsService($amountService, $interestService);
-        $portfolioService = new PortfolioService($amountService);
-        $evolutionService = new EvolutionService();
-        $inflationService = new InflationService();
-
-        $bondsEvolution = new BondsEvolutionService($amountService, $interestService, $evolutionService, $portfolioService);
-        $inflatingEvolution = new InflationEvolutionService($inflationService, $evolutionService);
-
         $allBonds = $bondsService->listBonds();
 
         $series = [];
@@ -94,7 +82,7 @@ class BondsController extends Controller
 
         // add inflation
         $inflationEvolutions = $inflatingEvolution->getEvolution($startDate, $endDate, $dateInterval);
-        $inflationSeries = array_map(function(Evolution $evolution) {
+        $inflationSeries = array_map(function (Evolution $evolution) {
             return [
                 'x' => $evolution->getDate()->format('U') * 1000,
                 'y' => $evolution->getValue(),
@@ -112,17 +100,13 @@ class BondsController extends Controller
         ]);
     }
 
-    public function viewAction($bondsSymbol)
+    public function viewAction(
+        $bondsSymbol,
+        BondsService $bondsService,
+        PortfolioService $portfolioService,
+        BondsEvolutionService $bondsEvolution
+    )
     {
-        $currencyService = new CurrencyService();
-        $amountService = new AmountService($currencyService);
-        $interestService = new InterestService($amountService);
-        $bondsService = new BondsService($amountService, $interestService);
-        $portfolioService = new PortfolioService($amountService);
-        $evolutionService = new EvolutionService();
-
-        $bondsEvolution = new BondsEvolutionService($amountService, $interestService, $evolutionService, $portfolioService);
-
         try {
             $bonds = $bondsService->buildBonds($bondsSymbol);
             $portfolio = $portfolioService->buildPortfolio($bondsSymbol);

@@ -1,5 +1,6 @@
 imports:
     - { resource: config_dev.yml }
+#    - { resource: '../../tests/AppBundle/Config/services.dependencies.yml' }
 
 framework:
     test: ~
@@ -14,3 +15,4 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+

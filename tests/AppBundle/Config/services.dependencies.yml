@@ -1,0 +1,48 @@
+services:
+    _defaults:
+#        autowire: true
+        autoconfigure: true
+        public: true
+
+    CurrencyServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@CurrencyService']
+
+    AmountServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@AmountService', ['@CurrencyServiceMock']]
+
+    InterestServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@InterestService', ['@AmountServiceMock']]
+
+    BondsServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@BondsService', ['@AmountServiceMock', '@InterestServiceMock']]
+
+    PortfolioServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@PortfolioService', ['@AmountServiceMock']]
+
+    EvolutionServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+
+    InflationServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+
+    BondsEvolutionServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@BondsEvolutionService', ['@AmountServiceMock', '@InterestServiceMock', '@EvolutionServiceMock', '@PortfolioServiceMock']]
+
+    InflationEvolutionServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: ['@InflationEvolutionService', ['@InflationServiceMock', '@EvolutionServiceMock']]

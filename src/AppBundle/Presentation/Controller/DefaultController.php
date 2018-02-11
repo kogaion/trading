@@ -2,8 +2,6 @@
 
 namespace AppBundle\Presentation\Controller;
 
-use AppBundle\Domain\Model\Trading\Amount;
-use AppBundle\Domain\Service\Trading\CurrencyService;
 use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Service\Trading\AmountService;
@@ -16,12 +14,8 @@ class DefaultController extends Controller
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, InterestService $interestService, AmountService $amountService)
     {
-        $currencyService = new CurrencyService();
-        $amountService = new AmountService($currencyService);
-        $interestService = new InterestService($amountService);
-
         $currency = 'LEI';
         $interest = $interestService->makeInterest(12, new \DateInterval('P1Y'));
         $amount = $amountService->buildAmount(4500, $currency);

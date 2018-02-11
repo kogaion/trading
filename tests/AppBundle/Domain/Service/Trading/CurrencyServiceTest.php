@@ -18,9 +18,8 @@ class CurrencyServiceTest extends TestCase
 {
     public function testBuilderReturnsCurrency()
     {
-
         $symbol = 'XYZ';
-        $service = $this->currencyService->shouldReceive('loadCurrencies')->andReturn([$symbol => 2]);
+        $this->currencyService->shouldReceive('loadCurrencies')->andReturn([$symbol => 2]);
 
         $instance = $this->currencyService->buildCurrency($symbol);
 
@@ -31,7 +30,7 @@ class CurrencyServiceTest extends TestCase
     public function testBuilderRecognizeOnlyValidCurrencies()
     {
         $symbol = 'XYZ';
-        $service = $this->currencyService->shouldReceive('loadCurrencies')->andReturn([CurrencyService::DEFAULT_CURRENCY => 2]);
+        $this->currencyService->shouldReceive('loadCurrencies')->andReturn([CurrencyService::DEFAULT_CURRENCY => 2]);
 
         $this->expectExceptionCode(InvalidArgumentException::ERR_CURRENCY_INVALID);
         $this->currencyService->buildCurrency($symbol);
