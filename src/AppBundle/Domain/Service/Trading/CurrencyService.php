@@ -34,7 +34,7 @@ class CurrencyService
     public function buildCurrency($currencySymbol)
     {
         $currencyPrecision = $this->searchCurrency($currencySymbol);
-        return $this->makeCurrency($currencySymbol, $currencyPrecision[$currencySymbol]);
+        return $this->makeCurrency($currencySymbol, $currencyPrecision);
     }
 
     /**

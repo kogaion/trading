@@ -46,6 +46,7 @@ class BondsController extends Controller
 
             $initialValue = $portfolio->getPrice()->getValue();
             $currency = $portfolio->getUnitPrice()->getCurrency()->getSymbol();
+            $precision = $portfolio->getUnitPrice()->getCurrency()->getPrecision();
 
             if ($initialValue == 0) {
                 continue;
@@ -58,7 +59,7 @@ class BondsController extends Controller
                 $dateInterval
             );
 
-            $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $currency, &$startDate, &$endDate) {
+            $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $currency, $precision, &$startDate, &$endDate) {
                 if (null === $startDate || $startDate->format('U') > $evolution->getDate()->format('U')) {
                     $startDate = clone $evolution->getDate();
                 }
@@ -67,9 +68,9 @@ class BondsController extends Controller
                 }
                 return [
                     'x' => $evolution->getDate()->format('U') * 1000,
-                    'y' => $evolution->getValue() / $initialValue * 100,
-                    'amount' => $evolution->getValue(),
-                    'initial' => $initialValue,
+                    'y' => round($evolution->getValue() / $initialValue * 100, $precision),
+                    'amount' => round($evolution->getValue(), $precision),
+                    'initial' => round($initialValue, $precision),
                     'currency' => $currency,
                 ];
             }, $evolutions);
@@ -127,7 +128,7 @@ class BondsController extends Controller
          */
         $dateStart = $dateEnd = null;
         $initialValue = $portfolio->getPrice()->getValue();
-        $currency = $portfolio->getUnitPrice()->getCurrency();
+        $precision = $portfolio->getUnitPrice()->getCurrency()->getPrecision();
 
         $evolutionSeries = array_map(function (Evolution $evolution) use (&$dateStart, &$dateEnd) {
             if (null === $dateStart) {
@@ -140,11 +141,11 @@ class BondsController extends Controller
             ];
         }, $evolutions);
 
-        $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $currency) {
+        $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $precision) {
             return [
                 'x' => $evolution->getDate()->format('U') * 1000,
-                'y' => $evolution->getValue() / $initialValue * 100,
-                'z' => $evolution->getValue()
+                'y' => round($evolution->getValue() / $initialValue * 100, $precision),
+                'z' => round($evolution->getValue(), $precision)
             ];
         }, $evolutions);
 

@@ -40,4 +40,12 @@ class CurrencyServiceTest extends TestCase
         $this->expectExceptionCode(InvalidArgumentException::ERR_CURRENCY_INVALID);
         $this->currencyService->buildCurrency('Something inexistent');
     }
+
+    public function testCurrencyPrecisionIsCorrectlyLoaded()
+    {
+        $this->currencyService->shouldReceive('loadCurrencies')->andReturn([CurrencyService::DEFAULT_CURRENCY => 5]);
+
+        $currency = $this->currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY);
+        $this->assertEquals(5, $currency->getPrecision());
+    }
 }
