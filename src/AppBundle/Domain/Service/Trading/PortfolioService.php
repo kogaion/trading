@@ -85,12 +85,13 @@ class PortfolioService
     protected function loadPortfolio()
     {
         return [
-            'SBG20' => [100, 104.5, 'LEI', 'today'],
-            'ADRS18' => [27, 110, 'LEI', 'today'],
-            'BNET19' => [11, 104, 'LEI', 'today'],
-            'CFS18' => [1, 100.03, 'LEI', 'today'],
-            'FRU21' => [500, 104, 'LEI', 'today'],
-            'INV22' => [20, 105, 'LEI', 'today'],
+            'SBG20' => [100, 104.0521, 'LEI', 'today'],
+            'ADRS18' => [28, 1096.6667, 'LEI', 'today'],
+            'BNET19' => [5, 1047.3904, 'LEI', 'today'],
+            'BNET22' => [40, 106.0534, 'LEI', 'today'],
+            'CFS18' => [23, 1018.0, 'LEI', 'today'],
+            'FRU21' => [13, 105.5681, 'LEI', 'today'],
+            'INV22' => [20, 97.0200, 'LEI', 'today'],
         ];
     }
 }

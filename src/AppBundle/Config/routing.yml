@@ -2,6 +2,11 @@ bonds_list:
     path: /bonds
     defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:listAction' }
 
+bonds_calculus:
+    path: /bonds/calculus
+    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController::calculusAction' }
+
 bonds_view:
     path: /bonds/{bondsSymbol}
     defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }
+

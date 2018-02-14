@@ -10,12 +10,14 @@ namespace AppBundle\Presentation\Controller;
 
 
 use AppBundle\Domain\Model\Trading\Evolution;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
 use AppBundle\Domain\Service\Reporting\InflationEvolutionService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
 use AppBundle\Domain\Service\Trading\BondsService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class BondsController extends Controller
 {
@@ -159,6 +161,76 @@ class BondsController extends Controller
             "currency" => $portfolio->getUnitPrice()->getCurrency()->getSymbol(),
 
         ]);
+
+    }
+
+    public function calculusAction()
+    {
+        $previousCouponDate = '2017-07-31';
+        $acquisitionDate = 'today';
+        $couponPercent = 0.08;
+        $couponFrequency = 1 / 6; // tri-month coupon // assume at least monthly coupons
+
+//        FFS date add
+
+        $faceValue = 1000;
+        $maturityDate = '2018-11-27';
+        $n = 4; // how many coupons left
+        $yield = 0.0865; // yearly
+
+
+//        $previousCouponDate = '1997-03-01';
+//        $nextCouponDate = '1997-09-01';
+//        $acquisitionDate = '1997-07-17';
+//        $couponPercent = 0.1;
+//        $couponFrequency = 1 / 2;
+//        $faceValue = 100;
+//        $maturityDate = '2018-11-27';
+//        $n = 12; // how many coupons left
+//        $yield = 0
+
+
+        $yield = $yield * $couponFrequency;
+
+        $coupon = $couponFrequency * $couponPercent * $faceValue;
+
+        $previousCouponDate = DateTimeInterval::getDate($previousCouponDate);
+        $nextCouponDate = clone $previousCouponDate;
+        $nextCouponDate = $nextCouponDate->add(new \DateInterval('P' . (12 * $couponFrequency) . 'M'));
+
+        var_dump($nextCouponDate);
+        $acquisitionDate = DateTimeInterval::getDate($acquisitionDate);
+        $maturityDate = DateTimeInterval::getDate($maturityDate);
+        $nrDaysLeft = $acquisitionDate->diff($nextCouponDate);
+        $nrDaysLeft = $nrDaysLeft->days;
+        $nrDaysPassed = $previousCouponDate->diff($acquisitionDate);
+        $nrDaysPassed = $nrDaysPassed->days;
+        $nrDaysCurrentCoupon = $previousCouponDate->diff($nextCouponDate);
+        $nrDaysCurrentCoupon = $nrDaysCurrentCoupon->days;
+
+        // how many coupons left
+        $n = $maturityDate->diff($previousCouponDate);
+        $n = ($n->y * 12 + $n->m) / (12 * $couponFrequency);
+
+        $w = $nrDaysLeft / $nrDaysCurrentCoupon;
+
+
+        $grossPrice = (
+            $coupon / pow(1 + $yield, $w)
+            *
+            (pow(1 + $yield, $n) - 1)
+            /
+            (pow(1 + $yield, $n - 1) * $yield)
+            +
+            $faceValue / pow(1 + $yield, $n - 1 + $w)
+        );
+
+        $interest = $couponPercent * $couponFrequency * $nrDaysPassed / $nrDaysCurrentCoupon  * $faceValue;
+
+        $netPrice = $grossPrice - $interest;
+
+        return new Response(json_encode([$grossPrice, $netPrice, $interest]));
+
 
     }
 }
