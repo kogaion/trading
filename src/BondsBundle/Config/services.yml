@@ -1,0 +1,8 @@
+services:
+    _defaults:
+#        autowire: true
+        autoconfigure: true
+        public: false
+
+#    CurrencyService:
+#        class: 'BondsBundle\Domain\Service\Trading\CurrencyService'

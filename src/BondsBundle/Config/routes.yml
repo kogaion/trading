@@ -1,0 +1,3 @@
+bonds_view:
+    path: /bonds/{bondsSymbol}
+    defaults: { _controller: 'BondsBundle\Presentation\BondsController:viewAction' }

@@ -2,6 +2,10 @@ app:
     resource: '@AppBundle/Presentation/Controller/'
     type: annotation
 
+#bonds_file:
+#    resource: '@BondsBundle/Config/routes.yml'
+
 app_file:
-    # loads routes from the given routing file stored in some bundle
     resource: '@AppBundle/Config/routing.yml'
+
+
