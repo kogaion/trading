@@ -30,7 +30,17 @@ class BondsScreenerRepository extends EntityRepository implements Repo
         $manager = $this->getEntityManager();
         foreach ($bs as $bondScreener) {
             if ($bondScreener instanceof BondsScreener) {
-                $manager->persist($bondScreener);
+                if (!$this->findOneBy([
+                    'screenDate' => $bondScreener->getScreenDate(),
+                    'YTM' => $bondScreener->getYTM(),
+                    'symbol' => $bondScreener->getSymbol(),
+                    'bidQty' => $bondScreener->getBidQty(),
+                    'dirtyPrice' => $bondScreener->getDirtyPrice(),
+                    'spreadDays' => $bondScreener->getSpreadDays()
+                ])) {
+                    $manager->persist($bondScreener);
+                }
+                
             }
         }
         $manager->flush();

@@ -10,8 +10,12 @@ AppBundle\Domain\Model\Crawling\BondsScreener:
     indexes:
         symbol:
             columns: symbol
-        date:
-            columns: date
+        stamp:
+            columns: stamp
+    uniqueConstraints:
+        screenDate_ytm_symbol_bidQty_dirtyPrice_spreadDays:
+            columns: [ screen_date, ytm, symbol, bid_qty, dirty_price, spread_days ]
+
     fields:
         symbol:
             type: string
@@ -38,15 +42,19 @@ AppBundle\Domain\Model\Crawling\BondsScreener:
             scale: 4
         maturityDate:
             column: maturity_date
-            type: datetimetz
+            type: date
         spreadDays:
             column: spread_days
             type: integer
         interest:
             type: decimal
             scale: 4
+        screenDate:
+            type: date
         date:
+            column: stamp
             type: datetimetz
+
 
 
 

@@ -47,7 +47,7 @@ class GetBondsCommand extends ContainerAwareCommand
             $output->writeln(["Extracting bonds."]);
             $bonds = $this->loadBondsFromDOM($bondsIterator);
             
-            $output->writeln(["Saving bonds."]);
+            $output->writeln(["Saving ". count($bonds) . " bonds."]);
             $this->bondsScreenerRepository->storeBulk($bonds);
             
             $output->writeln(['Done.']);

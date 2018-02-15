@@ -47,24 +47,24 @@ class BondsScreener
     protected $YTM;
     /**
      * @var \DateTime
-     * @M\Column(type="datetimetz")
      */
     protected $maturityDate;
     /**
      * @var int
-     * @M\Column(type="integer")
      */
     protected $spreadDays;
     /**
      * @var double
-     * @M\Column(type="decimal", scale=4)
      */
     protected $interest;
     /**
      * @var \DateTime
-     * @M\Column(type="datetimetz")
      */
     protected $date;
+    /**
+     * @var \DateTime
+     */
+    protected $screenDate;
     
     /**
      * @param mixed $ask
@@ -181,6 +181,115 @@ class BondsScreener
     public function setDate($date)
     {
         $this->date = Formatter::toDateTime($date);
+        $this->setScreenDate(clone $this->date);
         return $this;
+    }
+    
+    /**
+     * @param int $id
+     * @return BondsScreener
+     */
+    public function setId($id)
+    {
+        $this->id = Formatter::toInt($id);
+        return $this;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getBid()
+    {
+        return $this->bid;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getBidQty()
+    {
+        return $this->bidQty;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getAsk()
+    {
+        return $this->ask;
+    }
+    
+    /**
+     * @param \DateTime $screenDate
+     * @return BondsScreener
+     */
+    public function setScreenDate($screenDate)
+    {
+        $this->screenDate = Formatter::toDateTime($screenDate);
+        return $this;
+    }
+    
+    /**
+     * @return \DateTime
+     */
+    public function getScreenDate()
+    {
+        return $this->screenDate;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getInterest()
+    {
+        return $this->interest;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getSpreadDays()
+    {
+        return $this->spreadDays;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getDirtyPrice()
+    {
+        return $this->dirtyPrice;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getYTM()
+    {
+        return $this->YTM;
+    }
+    
+    /**
+     * @return \DateTime
+     */
+    public function getMaturityDate()
+    {
+        return $this->maturityDate;
+    }
+    
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 }
