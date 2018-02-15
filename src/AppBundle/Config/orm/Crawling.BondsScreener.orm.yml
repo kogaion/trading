@@ -1,0 +1,53 @@
+AppBundle\Domain\Model\Crawling\BondsScreener:
+    type: entity
+    repositoryClass: AppBundle\Domain\Repository\BondsScreenerRepository
+
+    table: bonds_screener
+    id:
+        id:
+            type: integer
+            generator: { strategy: "AUTO" }
+    indexes:
+        symbol:
+            columns: symbol
+        date:
+            columns: date
+    fields:
+        symbol:
+            type: string
+            length: 50
+        bid:
+            type: decimal
+            scale: 4
+        bidQty:
+            column: bid_qty
+            type: integer
+        ask:
+            type: decimal
+            scale: 4
+        askQty:
+            column: ask_qty
+            type: integer
+        dirtyPrice:
+            column: dirty_price
+            type: decimal
+            scale: 4
+        YTM:
+            column: ytm
+            type: decimal
+            scale: 4
+        maturityDate:
+            column: maturity_date
+            type: datetimetz
+        spreadDays:
+            column: spread_days
+            type: integer
+        interest:
+            type: decimal
+            scale: 4
+        date:
+            type: datetimetz
+
+
+
+

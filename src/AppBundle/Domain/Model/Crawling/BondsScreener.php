@@ -3,99 +3,142 @@
  * Created by PhpStorm.
  * User: Kogaion
  * Date: 2/15/2018
- * Time: 4:18 PM
+ * Time: 8:27 PM
  */
 
-namespace AppBundle\Domain\Model\Trading;
+namespace AppBundle\Domain\Model\Crawling;
 
 
-class BondScreener
+use AppBundle\Domain\Model\Util\Formatter;
+
+class BondsScreener
 {
+    /**
+     * @var int
+     */
+    protected $id;
+    /**
+     * @var string
+     */
     protected $symbol;
+    /**
+     * @var double
+     */
     protected $bid;
+    /**
+     * @var int
+     */
     protected $bidQty;
+    /**
+     * @var double
+     */
     protected $ask;
+    /**
+     * @var int
+     */
     protected $askQty;
+    /**
+     * @var double
+     */
     protected $dirtyPrice;
+    /**
+     * @var double
+     */
     protected $YTM;
+    /**
+     * @var \DateTime
+     * @M\Column(type="datetimetz")
+     */
     protected $maturityDate;
+    /**
+     * @var int
+     * @M\Column(type="integer")
+     */
     protected $spreadDays;
+    /**
+     * @var double
+     * @M\Column(type="decimal", scale=4)
+     */
     protected $interest;
+    /**
+     * @var \DateTime
+     * @M\Column(type="datetimetz")
+     */
     protected $date;
     
     /**
      * @param mixed $ask
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setAsk($ask)
     {
-        $this->ask = $ask;
+        $this->ask = Formatter::toDouble($ask);
         return $this;
     }
     
     /**
      * @param mixed $askQty
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setAskQty($askQty)
     {
-        $this->askQty = $askQty;
+        $this->askQty = Formatter::toInt($askQty);
         return $this;
     }
     
     /**
      * @param mixed $dirtyPrice
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setDirtyPrice($dirtyPrice)
     {
-        $this->dirtyPrice = $dirtyPrice;
+        $this->dirtyPrice = Formatter::toDouble($dirtyPrice);
         return $this;
     }
     
     /**
      * @param mixed $YTM
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setYTM($YTM)
     {
-        $this->YTM = $YTM;
+        $this->YTM = Formatter::toDouble($YTM);
         return $this;
     }
     
     /**
      * @param mixed $maturityDate
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setMaturityDate($maturityDate)
     {
-        $this->maturityDate = $maturityDate;
+        $this->maturityDate = Formatter::toDateTime($maturityDate);
         return $this;
     }
     
     /**
      * @param mixed $spreadDays
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setSpreadDays($spreadDays)
     {
-        $this->spreadDays = $spreadDays;
+        $this->spreadDays = Formatter::toInt($spreadDays);
         return $this;
     }
     
     /**
      * @param mixed $interest
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setInterest($interest)
     {
-        $this->interest = $interest;
+        $this->interest = Formatter::toDouble($interest);
         return $this;
     }
     
     /**
      * @param mixed $symbol
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setSymbol($symbol)
     {
@@ -105,21 +148,21 @@ class BondScreener
     
     /**
      * @param mixed $bid
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setBid($bid)
     {
-        $this->bid = $bid;
+        $this->bid = Formatter::toDouble($bid);
         return $this;
     }
     
     /**
      * @param mixed $bidQty
-     * @return BondScreener
+     * @return BondsScreener
      */
     public function setBidQty($bidQty)
     {
-        $this->bidQty = $bidQty;
+        $this->bidQty = Formatter::toInt($bidQty);
         return $this;
     }
     
@@ -133,13 +176,11 @@ class BondScreener
     
     /**
      * @param mixed $date
-     * @return BondScreener
+     * @return BondsScreener
      */
-    public function setDate(\DateTime $date)
+    public function setDate($date)
     {
-        $this->date = $date;
+        $this->date = Formatter::toDateTime($date);
         return $this;
     }
-    
-    
 }

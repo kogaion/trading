@@ -3,7 +3,7 @@ parameters:
 
 services:
     _defaults:
-#        autowire: true
+        autowire: true
         autoconfigure: true
         public: false
 
@@ -39,3 +39,11 @@ services:
     InflationEvolutionService:
         class: 'AppBundle\Domain\Service\Reporting\InflationEvolutionService'
         arguments: ['@InflationService', '@EvolutionService']
+
+#    AppBundle\Domain\Repository\BondsScreenerRepository:
+#        class: 'AppBundle\Infrastructure\Repository\BondsScreenerRepository'
+#        factory: 'doctrine.orm.entity_manager:getRepository'
+#        arguments: ['AppBundle\Domain\Model\Crawling\BondsScreener']
+
+    AppBundle\Command\GetBondsCommand:
+        tags: [console.command]

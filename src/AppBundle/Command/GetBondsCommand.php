@@ -9,19 +9,28 @@
 namespace AppBundle\Command;
 
 
-use AppBundle\Domain\Model\Trading\BondScreener;
+use AppBundle\Domain\Model\Crawling\BondsScreener;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\HttpException;
+use AppBundle\Domain\Repository\BondsScreenerRepository;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GetBonds extends ContainerAwareCommand
+class GetBondsCommand extends ContainerAwareCommand
 {
+    protected $bondsScreenerRepository;
+    
+    public function __construct($name = null, BondsScreenerRepository $bondsScreenerRepository)
+    {
+        parent::__construct($name);
+        $this->bondsScreenerRepository = $bondsScreenerRepository;
+    }
+    
     protected function configure()
     {
-        $this->setName('app:get-bonds')
+        $this->setName('screen:bonds')
             ->setDescription('Get Bonds from Tradeville')
             ->setHelp('Get Bonds from Tradeville');
     }
@@ -34,9 +43,12 @@ class GetBonds extends ContainerAwareCommand
             
             $output->writeln(["Connected. Going to bonds screener."]);
             $bondsIterator = $this->loadBondsScreener($client);
-            
+    
+            $output->writeln(["Extracting bonds."]);
             $bonds = $this->loadBondsFromDOM($bondsIterator);
-            print_r($bonds);
+            
+            $output->writeln(["Saving bonds."]);
+            $this->bondsScreenerRepository->storeBulk($bonds);
             
             $output->writeln(['Done.']);
         } catch (HttpException $e) {
@@ -87,7 +99,7 @@ class GetBonds extends ContainerAwareCommand
     
     /**
      * @param \ArrayIterator $tableRows
-     * @return BondScreener[]
+     * @return BondsScreener[]
      */
     private function loadBondsFromDOM(\ArrayIterator $tableRows)
     {
@@ -102,9 +114,9 @@ class GetBonds extends ContainerAwareCommand
                 $cells = $row->childNodes;
                 
                 $i = 0;
-                $bondScreener = new BondScreener();
+                $bondScreener = new BondsScreener();
                 $bondScreener
-                    ->setDate(DateTimeInterval::getToday())
+                    ->setDate(DateTimeInterval::getDate())
                     ->setSymbol($cells->item($i++)->nodeValue)
                     ->setBidQty($cells->item($i++)->nodeValue)
                     ->setBid($cells->item($i++)->nodeValue)
