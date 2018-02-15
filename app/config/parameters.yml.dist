@@ -17,3 +17,8 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    tdv_url_login: https://2.tradeville.eu/Trading/Loginq.aspx
+    tdv_cont: some-account-here
+    tdv_pw: some-password-here
+    tdv_url_bonds_screener: https://2.tradeville.eu/Trading/ReportsAndQuotes/BondScreener.aspx
