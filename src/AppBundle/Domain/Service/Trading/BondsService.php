@@ -14,6 +14,7 @@ use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
+use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 
 class BondsService
 {
@@ -25,18 +26,27 @@ class BondsService
      * @var InterestService
      */
     protected $interestService;
-
+    /**
+     * @var BondsScreenerService
+     */
+    private $bondsScreenerService;
+    
     /**
      * BondsService constructor.
      * @param AmountService $amountService
      * @param InterestService $interestService
+     * @param BondsScreenerService $bondsScreenerService
      */
-    public function __construct(AmountService $amountService, InterestService $interestService)
+    public function __construct(
+        AmountService $amountService,
+        InterestService $interestService,
+        BondsScreenerService $bondsScreenerService)
     {
         $this->amountService = $amountService;
         $this->interestService = $interestService;
+        $this->bondsScreenerService = $bondsScreenerService;
     }
-
+    
     /**
      * @param string $symbol
      * @param Interest $interest
@@ -52,7 +62,7 @@ class BondsService
             ->setFaceValue($faceValue)
             ->setMaturityDate($maturityDate);
     }
-
+    
     /**
      * @param $bondsSymbol
      * @return PrincipalBonds
@@ -67,7 +77,7 @@ class BondsService
             DateTimeInterval::getDate($principal[5])
         );
     }
-
+    
     /**
      * @return PrincipalBonds[]
      */
@@ -79,7 +89,7 @@ class BondsService
         }
         return $bonds;
     }
-
+    
     /**
      * @param $bondsSymbol
      * @return mixed
@@ -88,30 +98,35 @@ class BondsService
     protected function searchBonds($bondsSymbol)
     {
         $bonds = $this->loadBonds();
-
+        
         if (!array_key_exists($bondsSymbol, $bonds)) {
             throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
         }
-
+        
         return $bonds[$bondsSymbol];
     }
-    
-//    public function store
 
+//    public function store
+    
     /**
      * @return array
-     * @todo load from Repository
      */
     protected function loadBonds()
     {
-        return [
-            'SBG20' => ['SBG20', 12, 'P1Y', 100, 'LEI', '2020-01-15'],
-            'FRU21' => ['FRU21', 9, 'P1Y', 100, 'LEI', '2021-03-14'],
-            'CFS18' => ['CFS18', 8, 'P1Y', 1000, 'LEI', '2018-11-27'],
-            'BNET22' => ['BNET22', 9, 'P1Y', 100, 'LEI', '2022-09-08'],
-            'BNET19' => ['BNET19', 9, 'P1Y', 1000, 'LEI', '2019-06-15'],
-            'ADRS18' => ['ADRS18', 10, 'P1Y', 1000, 'LEI', '2018-10-23'],
-            'INV22' => ['INV22', 7, 'P1Y', 90, 'LEI', '2022-03-23'],
-        ];
+        $bonds = $this->bondsScreenerService->loadBonds(['SBG20']);
+        
+        $return = [];
+        foreach ($bonds as $bond) {
+            $return[$bond->getSymbol()] = [
+                $bond->getSymbol(),
+                $bond->getInterest(),
+                'P1Y', // @todo load from Repository
+                (int) ($bond->getDirtyPrice() / $bond->getAsk()) * 100.00, // @todo load from Repository
+                'LEI', // @todo load from Repository
+                $bond->getMaturityDate()->format('Y-m-d')
+            ];
+        }
+        
+        return $return;
     }
 }

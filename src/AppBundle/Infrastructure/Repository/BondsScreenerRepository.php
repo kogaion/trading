@@ -22,28 +22,51 @@ class BondsScreenerRepository extends EntityRepository implements Repo
     }
     
     /**
-     * @param BondsScreener[] $bs
+     * @param BondsScreener[] $bonds
      * @return bool
      */
-    public function storeBulk(array $bs)
+    public function storeBulk(array $bonds)
     {
         $manager = $this->getEntityManager();
-        foreach ($bs as $bondScreener) {
-            if ($bondScreener instanceof BondsScreener) {
+        foreach ($bonds as $screener) {
+            if ($screener instanceof BondsScreener) {
                 if (!$this->findOneBy([
-                    'screenDate' => $bondScreener->getScreenDate(),
-                    'YTM' => $bondScreener->getYTM(),
-                    'symbol' => $bondScreener->getSymbol(),
-                    'bidQty' => $bondScreener->getBidQty(),
-                    'dirtyPrice' => $bondScreener->getDirtyPrice(),
-                    'spreadDays' => $bondScreener->getSpreadDays()
+                    'screenDate' => $screener->getScreenDate(),
+                    'YTM' => $screener->getYTM(),
+                    'symbol' => $screener->getSymbol(),
+                    'bidQty' => $screener->getBidQty(),
+                    'dirtyPrice' => $screener->getDirtyPrice(),
+                    'spreadDays' => $screener->getSpreadDays()
                 ])) {
-                    $manager->persist($bondScreener);
+                    $manager->persist($screener);
                 }
-                
             }
         }
         $manager->flush();
         return true;
+    }
+    
+    /**
+     * @return BondsScreener[]
+     */
+    public function loadDistinctBonds()
+    {
+        $manager = $this->getEntityManager();
+        
+        $builder = $this->createResultSetMappingBuilder("t");
+        
+        $query = $manager->createNativeQuery("
+            select {$builder->generateSelectClause("t")}
+            from (
+                select *
+                from bonds_screener
+                order by screen_date desc, stamp desc
+            ) t
+            group by symbol
+            order by ytm
+            
+        ", $builder);
+        
+        return $query->getResult();
     }
 }

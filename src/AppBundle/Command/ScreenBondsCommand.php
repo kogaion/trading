@@ -12,20 +12,20 @@ namespace AppBundle\Command;
 use AppBundle\Domain\Model\Crawling\BondsScreener;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\HttpException;
-use AppBundle\Domain\Repository\BondsScreenerRepository;
+use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GetBondsCommand extends ContainerAwareCommand
+class ScreenBondsCommand extends ContainerAwareCommand
 {
-    protected $bondsScreenerRepository;
+    protected $bondsScreenerService;
     
-    public function __construct($name = null, BondsScreenerRepository $bondsScreenerRepository)
+    public function __construct($name = null, BondsScreenerService $bondsScreenerService)
     {
         parent::__construct($name);
-        $this->bondsScreenerRepository = $bondsScreenerRepository;
+        $this->bondsScreenerService = $bondsScreenerService;
     }
     
     protected function configure()
@@ -43,12 +43,13 @@ class GetBondsCommand extends ContainerAwareCommand
             
             $output->writeln(["Connected. Going to bonds screener."]);
             $bondsIterator = $this->loadBondsScreener($client);
-    
+            $output->writeln(["Found {$bondsIterator->count()} items."]);
+            
             $output->writeln(["Extracting bonds."]);
             $bonds = $this->loadBondsFromDOM($bondsIterator);
             
-            $output->writeln(["Saving ". count($bonds) . " bonds."]);
-            $this->bondsScreenerRepository->storeBulk($bonds);
+            $output->writeln(["Saving " . count($bonds) . " bonds."]);
+            $this->bondsScreenerService->saveBonds($bonds);
             
             $output->writeln(['Done.']);
         } catch (HttpException $e) {
@@ -127,8 +128,7 @@ class GetBondsCommand extends ContainerAwareCommand
                     ->setMaturityDate($cells->item($i++)->nodeValue)
                     ->setSpreadDays($cells->item($i++)->nodeValue)
                     ->setInterest($cells->item($i++)->nodeValue);
-                
-                $bonds[$bondScreener->getSymbol()] = $bondScreener;
+                $bonds[] = $bondScreener;
             }
         }
         

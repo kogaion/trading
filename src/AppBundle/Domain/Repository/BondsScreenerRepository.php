@@ -14,8 +14,13 @@ use AppBundle\Domain\Model\Crawling\BondsScreener;
 interface BondsScreenerRepository
 {
     /**
-     * @param BondsScreener[] $bs
+     * @param BondsScreener[] $bonds
      * @return bool
      */
-    public function storeBulk(array $bs);
+    public function storeBulk(array $bonds);
+    
+    /**
+     * @return BondsScreener[]
+     */
+    public function loadDistinctBonds();
 }

@@ -40,10 +40,12 @@ services:
         class: 'AppBundle\Domain\Service\Reporting\InflationEvolutionService'
         arguments: ['@InflationService', '@EvolutionService']
 
-#    AppBundle\Domain\Repository\BondsScreenerRepository:
-#        class: 'AppBundle\Infrastructure\Repository\BondsScreenerRepository'
-#        factory: 'doctrine.orm.entity_manager:getRepository'
-#        arguments: ['AppBundle\Domain\Model\Crawling\BondsScreener']
+    BondsScreenerService:
+        class: 'AppBundle\Domain\Service\Crawling\BondsScreenerService'
 
-    AppBundle\Command\GetBondsCommand:
+    #################
+    #commands
+    #################
+
+    AppBundle\Command\ScreenBondsCommand:
         tags: [console.command]
