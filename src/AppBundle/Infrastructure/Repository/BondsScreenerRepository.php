@@ -25,7 +25,7 @@ class BondsScreenerRepository extends EntityRepository implements Repo
      * @param BondsScreener[] $bonds
      * @return bool
      */
-    public function storeBulk(array $bonds)
+    public function storeBonds(array $bonds)
     {
         $manager = $this->getEntityManager();
         foreach ($bonds as $screener) {
@@ -34,7 +34,7 @@ class BondsScreenerRepository extends EntityRepository implements Repo
                     'screenDate' => $screener->getScreenDate(),
                     'YTM' => $screener->getYTM(),
                     'symbol' => $screener->getSymbol(),
-                    'bidQty' => $screener->getBidQty(),
+                    'askQty' => $screener->getAskQty(),
                     'dirtyPrice' => $screener->getDirtyPrice(),
                     'spreadDays' => $screener->getSpreadDays()
                 ])) {
@@ -49,7 +49,7 @@ class BondsScreenerRepository extends EntityRepository implements Repo
     /**
      * @return BondsScreener[]
      */
-    public function loadDistinctBonds()
+    public function loadBonds()
     {
         $manager = $this->getEntityManager();
         
@@ -68,5 +68,19 @@ class BondsScreenerRepository extends EntityRepository implements Repo
         ", $builder);
         
         return $query->getResult();
+    }
+    
+    /**
+     * @param $symbol
+     * @return BondsScreener
+     */
+    public function loadBond($symbol)
+    {
+        return $this->findOneBy([
+            'symbol'    => $symbol,
+        ], [
+            'screenDate'    => 'desc',
+            'date'         => 'desc'
+        ]);
     }
 }

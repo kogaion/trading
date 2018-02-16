@@ -2,6 +2,8 @@
 
 namespace Tests\AppBundle;
 
+use AppBundle\Domain\Repository\BondsScreenerRepository;
+use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
 use AppBundle\Domain\Service\Reporting\InflationEvolutionService;
 use AppBundle\Domain\Service\Trading\AmountService;
@@ -60,7 +62,15 @@ class TestCase extends
      * @var Mock
      */
     protected $inflationEvolutionService;
-
+    /**
+     * @var Mock
+     */
+    private $bondsScreenerService;
+    /**
+     * @var Mock
+     */
+    private $bondsScreenerRepository;
+    
     public function tearDown()
     {
         Mockery::close();
@@ -82,26 +92,30 @@ class TestCase extends
         $this->currencyService = Mockery::spy(CurrencyService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $this->amountService = Mockery::spy(AmountService::class, [$this->currencyService])->makePartial()->shouldAllowMockingProtectedMethods();
         $this->interestService = Mockery::spy(InterestService::class, [$this->amountService])->makePartial()->shouldAllowMockingProtectedMethods();
-        $this->bondsService = Mockery::spy(BondsService::class, [$this->amountService, $this->interestService])->makePartial()->shouldAllowMockingProtectedMethods();
+        
+        $this->bondsScreenerRepository = Mockery::spy(BondsScreenerRepository::class, [])->makePartial()->shouldAllowMockingProtectedMethods();
+        $this->bondsScreenerService = Mockery::spy(BondsScreenerService::class, [$this->bondsScreenerRepository])->makePartial()->shouldAllowMockingProtectedMethods();
+    
+        $this->bondsService = Mockery::spy(BondsService::class, [$this->amountService, $this->interestService, $this->bondsScreenerService])->makePartial()->shouldAllowMockingProtectedMethods();
         $this->portfolioService = Mockery::spy(PortfolioService::class, [$this->amountService])->makePartial()->shouldAllowMockingProtectedMethods();
         $this->evolutionService = Mockery::spy(EvolutionService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         $this->inflationService = Mockery::spy(InflationService::class)->makePartial()->shouldAllowMockingProtectedMethods();
 
         $this->bondsEvolutionService = Mockery::spy(BondsEvolutionService::class, [$this->amountService, $this->interestService, $this->evolutionService, $this->portfolioService])->makePartial()->shouldAllowMockingProtectedMethods();
         $this->inflationEvolutionService = Mockery::spy(InflationEvolutionService::class, [$this->inflationService, $this->evolutionService])->makePartial()->shouldAllowMockingProtectedMethods();
-
+        
     }
 
     /**
      * @param $serviceName
      * @return Mock
      */
-    protected function getServiceMock($serviceName)
-    {
-        return (static::createClient()->getContainer()->get($serviceName . 'Mock')
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods());
-    }
+//    protected function getServiceMock($serviceName)
+//    {
+//        return (static::createClient()->getContainer()->get($serviceName . 'Mock')
+//            ->makePartial()
+//            ->shouldAllowMockingProtectedMethods());
+//    }
 
 
 }

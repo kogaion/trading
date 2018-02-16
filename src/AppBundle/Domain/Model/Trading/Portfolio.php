@@ -9,10 +9,16 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
-use AppBundle\Domain\Service\Trading\AmountService;
-
 class Portfolio
 {
+    /**
+     * @var int
+     */
+    protected $id;
+    /**
+     * @var string
+     */
+    protected $symbol;
     /**
      * @var \DateTime
      */
@@ -20,24 +26,27 @@ class Portfolio
     /**
      * @var int
      */
-    protected $balance = 1;
+    protected $balance;
     /**
-     * @var Amount
+     * @var double
      */
     protected $unitPrice;
     /**
-     * @var Amount
+     * @var double
      */
     protected $price;
+    /**
+     * @var double
+     */
+    protected $internalReturnRate;
 
     /**
-     * @param Amount $unitPrice
+     * @param double $unitPrice
      * @return Portfolio
      */
-    public function setUnitPrice(Amount $unitPrice)
+    public function setUnitPrice($unitPrice)
     {
         $this->unitPrice = $unitPrice;
-        $this->setPrice();
         return $this;
     }
 
@@ -48,12 +57,11 @@ class Portfolio
     public function setBalance($balance)
     {
         $this->balance = $balance;
-        $this->setPrice();
         return $this;
     }
 
     /**
-     * @return Amount
+     * @return double
      */
     public function getUnitPrice()
     {
@@ -69,24 +77,11 @@ class Portfolio
     }
 
     /**
-     * @return Amount
+     * @return double
      */
     public function getPrice()
     {
-        return $this->price;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function setPrice()
-    {
-        if (null !== $this->unitPrice && null !== $this->balance) {
-            $this->price = clone $this->unitPrice;
-            $this->price->setValue($this->getBalance() * $this->unitPrice->getValue());
-        }
-
-        return $this;
+        return $this->unitPrice * $this->balance;
     }
 
     /**
@@ -105,5 +100,41 @@ class Portfolio
     public function getAcquisitionDate()
     {
         return $this->acquisitionDate;
+    }
+    
+    /**
+     * @param float $internalReturnRate
+     * @return Portfolio
+     */
+    public function setInternalReturnRate($internalReturnRate)
+    {
+        $this->internalReturnRate = $internalReturnRate;
+        return $this;
+    }
+    
+    /**
+     * @return float
+     */
+    public function getInternalReturnRate()
+    {
+        return $this->internalReturnRate;
+    }
+    
+    /**
+     * @param string $symbol
+     * @return Portfolio
+     */
+    public function setSymbol($symbol)
+    {
+        $this->symbol = $symbol;
+        return $this;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getSymbol()
+    {
+        return $this->symbol;
     }
 }

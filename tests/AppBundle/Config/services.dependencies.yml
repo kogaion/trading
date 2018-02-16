@@ -46,3 +46,8 @@ services:
         class: 'Mock'
         factory: 'Mockery::spy'
         arguments: ['@InflationEvolutionService', ['@InflationServiceMock', '@EvolutionServiceMock']]
+
+    BondsScreenerServiceMock:
+        class: 'Mock'
+        factory: 'Mockery::spy'
+        arguments: []

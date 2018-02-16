@@ -292,4 +292,12 @@ class BondsScreener
     {
         return $this->date;
     }
+    
+    /**
+     * @return int
+     */
+    public function getAskQty()
+    {
+        return $this->askQty;
+    }
 }

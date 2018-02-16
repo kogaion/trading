@@ -9,27 +9,13 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
-use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Interest;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
 
 class InterestService
 {
     /**
-     * @var AmountService
-     */
-    protected $amountService;
-
-    /**
-     * InterestService constructor.
-     * @param AmountService $amountService
-     */
-    public function __construct(AmountService $amountService)
-    {
-        $this->amountService = $amountService;
-    }
-
-    /**
-     * @param float $percent
+     * @param double $percent
      * @param \DateInterval $interval
      * @return Interest
      */
@@ -37,21 +23,23 @@ class InterestService
     {
         return (new Interest())->setPercent($percent)->setInterval($interval);
     }
-
+    
     /**
-     * @param Amount $amount
+     * @param double $amount
      * @param Interest $interest
-     * @param \DateInterval $evaluationInterval
-     * @return Amount
+     * @param \DateTime $fromDate
+     * @param \DateTime $toDate
+     * @return double
      */
-    public function getInterestForInterval(Amount $amount, Interest $interest, \DateInterval $evaluationInterval)
+    public function getInterestForInterval($amount, Interest $interest, \DateTime $fromDate, \DateTime $toDate)
     {
-        $evaluatedInterest = clone $interest;
-        $evaluatedInterest->setInterval($evaluationInterval);
-
-        return $this->amountService->makeAmount(
-            $evaluatedInterest->getPercent() * $amount->getValue() / 100,
-            $amount->getCurrency()
-        );
+        $interestRatio = $interest->getPercent();
+        
+        $interestInterval = DateTimeInterval::recalculate($fromDate, $interest->getInterval());
+        
+        $startDate = clone $fromDate;
+        $currentInterval = $startDate->diff($toDate);
+        
+        return $amount * $interestRatio / 100 * $currentInterval->format('%a') / $interestInterval->format('%a');
     }
 }

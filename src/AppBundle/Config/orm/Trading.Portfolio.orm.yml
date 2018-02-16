@@ -1,0 +1,39 @@
+AppBundle\Domain\Model\Trading\Portfolio:
+    type: entity
+    repositoryClass: AppBundle\Domain\Repository\PortfolioRepository
+
+    table: portfolio
+    id:
+        id:
+            type: integer
+            generator: { strategy: "AUTO" }
+
+    indexes:
+        symbol:
+            columns: symbol
+        date:
+            columns: date
+
+    fields:
+        symbol:
+            type: string
+            length: 50
+        balance:
+            type: integer
+        unitPrice:
+            column: price
+            type: decimal
+            scale: 4
+        acquisitionDate:
+            column: date
+            type: datetimetz
+        internalReturnRate:
+            column: irr
+            type: decimal
+            scale: 4
+
+
+
+
+
+

@@ -11,8 +11,11 @@ namespace AppBundle\Domain\Model\Trading;
 
 class PrincipalBonds extends Principal
 {
+    const INTEREST_TYPE_FIXED = 'fixed';
+    const INTEREST_TYPE_VARIABLE = 'variable';
+    
     /**
-     * @var Amount
+     * @var double
      */
     protected $faceValue;
 
@@ -25,12 +28,23 @@ class PrincipalBonds extends Principal
      * @var Interest
      */
     protected $interest;
+    
+    /**
+     * @var string
+     */
+    protected $interestType;
+    
+    /**
+     * @var \DateInterval
+     */
+    protected $interestInterval;
+    
 
     /**
-     * @param Amount $faceValue
+     * @param double $faceValue
      * @return PrincipalBonds
      */
-    public function setFaceValue(Amount $faceValue)
+    public function setFaceValue($faceValue)
     {
         $this->faceValue = $faceValue;
         return $this;
@@ -73,10 +87,33 @@ class PrincipalBonds extends Principal
     }
 
     /**
-     * @return Amount
+     * @return double
      */
     public function getFaceValue()
     {
         return $this->faceValue;
+    }
+    
+    /**
+     * @param string $interestType
+     * @return PrincipalBonds
+     */
+    public function setInterestType($interestType)
+    {
+        if ($interestType == self::INTEREST_TYPE_FIXED || $interestType == self::INTEREST_TYPE_VARIABLE) {
+            $this->interestType = $interestType;
+        } else {
+            $this->interestType = self::INTEREST_TYPE_FIXED;
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getInterestType()
+    {
+        return $this->interestType;
     }
 }

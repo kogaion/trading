@@ -41,7 +41,7 @@ class BondsScreenerService
             $nonEmptyBonds[] = $b;
         }
         
-        $this->repository->storeBulk($nonEmptyBonds);
+        $this->repository->storeBonds($nonEmptyBonds);
     }
     
     /**
@@ -50,17 +50,19 @@ class BondsScreenerService
      */
     public function loadBonds($includeSymbols = [])
     {
-        $bonds = $this->repository->loadDistinctBonds();
+        $bonds = $this->repository->loadBonds();
+        if (empty($bonds)) {
+            return [];
+        }
         
         foreach ($bonds as $key => $b) {
             if (in_array($b->getSymbol(), $includeSymbols)) {
                 continue;
             }
             
-            if ($b->getYTM() <= 0 || $b->getAsk() == 0) {
+            if ($b->getYTM() <= 0 || $b->getAsk() <= 0) {
                 unset($bonds[$key]);
             }
-            
             
         }
         

@@ -8,17 +8,22 @@
 
 namespace AppBundle\Domain\Model\Util;
 
-
+/**
+ * Class DateTimeInterval
+ * @package AppBundle\Domain\Model\Util
+ * @todo - join with Formatter ?
+ */
 class DateTimeInterval
 {
     /**
+     * @param \DateTime $fromDate
      * @param \DateInterval $interval
      * @return \DateInterval
      */
-    public static function recalculate(\DateInterval $interval)
+    public static function recalculate(\DateTime $fromDate, \DateInterval $interval)
     {
-        $startDate = static::getToday();
-        $endDate = static::getToday();
+        $startDate = clone $fromDate;
+        $endDate = clone $fromDate;
         $endDate = $endDate->add($interval);
 
         return $startDate->diff($endDate);

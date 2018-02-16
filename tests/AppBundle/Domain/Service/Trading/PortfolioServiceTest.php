@@ -11,7 +11,6 @@ namespace Tests\AppBundle\Domain\Service\Trading;
 
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
-use AppBundle\Domain\Service\Trading\AmountService;
 use AppBundle\Domain\Service\Trading\CurrencyService;
 use Tests\AppBundle\TestCase;
 
@@ -56,7 +55,7 @@ class PortfolioServiceTest extends TestCase
         $balance = 14;
         $acquisitionDate = 'today';
         $symbol = 'xyz';
-        $portfolio = [$symbol => [$balance, $unitPrice, $currency, $acquisitionDate]];
+        $portfolio = [[$symbol, $balance, $unitPrice, $currency, $acquisitionDate]];
 
         $this->portfolioService->shouldReceive('loadPortfolio')->andReturn($portfolio);
 
@@ -91,13 +90,12 @@ class PortfolioServiceTest extends TestCase
         $balance = 14;
         $acquisitionDate = 'today';
         $symbol = 'xyz';
-        $portfolio = [$symbol => [$balance, $unitPrice, $currency, $acquisitionDate]];
+        $portfolio = [[$symbol, $balance, $unitPrice, $currency, $acquisitionDate]];
 
         $this->portfolioService->shouldReceive('loadPortfolio')->andReturn($portfolio);
 
         $portfolioList = $this->portfolioService->listPortfolio();
         $this->assertCount(count($portfolio), $portfolioList);
-        $this->assertArrayHasKey($symbol, $portfolioList);
-        $this->assertInstanceOf(Portfolio::class, $portfolioList[$symbol]);
+        $this->assertInstanceOf(Portfolio::class, $portfolioList[0]);
     }
 }

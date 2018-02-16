@@ -9,92 +9,118 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
-use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
+use AppBundle\Domain\Repository\BondsScreenerRepository;
+use AppBundle\Domain\Repository\PortfolioRepository;
 
 class PortfolioService
 {
     /**
-     * @var AmountService
+     * @var BondsScreenerRepository
      */
-    protected $amountService;
-
-    public function __construct(AmountService $amountService)
-    {
-        $this->amountService = $amountService;
-    }
-
+    private $bondsScreenerRepository;
     /**
+     * @var PortfolioRepository
+     */
+    private $portfolioRepository;
+    
+    public function __construct(PortfolioRepository $portfolioRepository, BondsScreenerRepository $bondsScreenerRepository)
+    {
+        $this->bondsScreenerRepository = $bondsScreenerRepository;
+        $this->portfolioRepository = $portfolioRepository;
+    }
+    
+    /**
+     * @param string $symbol
      * @param int $balance
-     * @param Amount $unitPrice
+     * @param double $unitPrice
      * @param \DateTime $acquisitionDate
      * @return Portfolio
      */
-    public function makePortfolio($balance, Amount $unitPrice, \DateTime $acquisitionDate)
+    public function makePortfolio($symbol, $balance, $unitPrice, \DateTime $acquisitionDate)
     {
-        return (new Portfolio())->setUnitPrice($unitPrice)->setBalance($balance)->setAcquisitionDate($acquisitionDate);
-    }
-
-    /**
-     * @param $principalSymbol
-     * @return Portfolio
-     * @todo Load from Repository
-     */
-    public function buildPortfolio($principalSymbol)
-    {
-        $principalPortfolio = $this->searchPortfolio($principalSymbol);
-        return $this->makePortfolio(
-            $principalPortfolio[0],
-            $this->amountService->buildAmount($principalPortfolio[1], $principalPortfolio[2]),
-            DateTimeInterval::getDate($principalPortfolio[3])
-        );
+        return (new Portfolio())
+            ->setSymbol($symbol)
+            ->setUnitPrice($unitPrice)
+            ->setBalance($balance)
+            ->setAcquisitionDate($acquisitionDate);
     }
 
     /**
      * @return Portfolio[]
      */
-    public function listPortfolio()
+    public function listPortfolios()
     {
-        $portfolio = [];
-        foreach ($this->loadPortfolio() as $symbol => $details) {
-            $portfolio[$symbol] = $this->buildPortfolio($symbol);
+        // get existing bonds
+        $return = $this->portfolioRepository->loadPortfolios();
+        
+        $interestedInBonds = ['SBG20', 'ADRS18', 'BNET19', 'BNET22', 'CFS18', 'FRU21', 'INV22'];
+        foreach ($interestedInBonds as $symbol) {
+            $return[] = $this->buildVirtualBondPortfolio($symbol);
         }
-        return $portfolio;
+        
+        $interestedInShares = [];
+        foreach ($interestedInShares as $symbol) {
+            $return[] = $this->buildVirtualSharePortfolio($symbol);
+        }
+        
+        return $return;
     }
 
     /**
-     * @param $principalSymbol
-     * @return mixed
+     * @param $symbol
+     * @return Portfolio
      * @todo load from Repository
      */
-    protected function searchPortfolio($principalSymbol)
+    public function buildPortfolio($symbol)
     {
-        $portfolio = $this->loadPortfolio();
-        if (!array_key_exists($principalSymbol, $portfolio)) {
-            return [0, 0, CurrencyService::DEFAULT_CURRENCY, 'today'];
+        $portfolio = $this->listPortfolios();
+        foreach ($portfolio as $p) {
+            if ($p->getSymbol() == $symbol) {
+                return $p;
+            }
         }
-
-        return $portfolio[$principalSymbol];
+        
+        $p = $this->buildVirtualBondPortfolio($symbol);
+        if ($p !== null) {
+            return $p;
+        }
+    
+        $p = $this->buildVirtualSharePortfolio($symbol);
+        if ($p !== null) {
+            return $p;
+        }
+        
+        // @todo !!! the same symbol can be both a BOND and a SHARE ... which one gets first?
+        
+        return $this->makePortfolio($symbol, 0, 0, DateTimeInterval::getToday());
     }
-
+    
     /**
-     * @return array
-     * @todo load from repository
+     * @param $symbol
+     * @return Portfolio|null
      */
-    protected function loadPortfolio()
+    protected function buildVirtualBondPortfolio($symbol)
     {
-        $existingPortfolio = [
-            ['CFS18', 8, 1020.9075, 'LEI', '2018-02-15']
-        ];
-        return [
-            'SBG20' => [100, 104.1836, 'LEI', 'today', 10.75],
-            'ADRS18' => [28, 1096.6667, 'LEI', 'today'],
-            'BNET19' => [5, 1048.3767, 'LEI', 'today', 6.22],
-            'BNET22' => [40, 106.1521, 'LEI', 'today', 8.08],
-            'CFS18' => [8, 1020.9075, 'LEI', '2018-02-15', 8.65],
-            'FRU21' => [13, 105.6667, 'LEI', 'today', 7.76],
-            'INV22' => [20, 97.0200, 'LEI', 'today'],
-        ];
+        $bonds = $this->bondsScreenerRepository->loadBond($symbol);
+        if ($bonds->getSymbol() == $symbol) {
+            return $this->makePortfolio(
+                $symbol,
+                $bonds->getAskQty(),
+                $bonds->getDirtyPrice(), // @todo -> add commission !!!
+                DateTimeInterval::getToday()
+            );
+        }
+        return null;
+    }
+    
+    /**
+     * @param $symbol
+     * @return Portfolio|null
+     */
+    protected function buildVirtualSharePortfolio($symbol)
+    {
+        return null;
     }
 }

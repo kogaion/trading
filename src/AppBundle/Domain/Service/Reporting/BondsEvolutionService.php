@@ -9,17 +9,15 @@
 namespace AppBundle\Domain\Service\Reporting;
 
 
-use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Evolution;
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
-use AppBundle\Domain\Service\Trading\AmountService;
 use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Service\Trading\EvolutionService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
 
 
-class   BondsEvolutionService
+class BondsEvolutionService
 {
     /**
      * @var PrincipalBonds
@@ -31,10 +29,6 @@ class   BondsEvolutionService
      */
     protected $portfolio;
 
-    /**
-     * @var AmountService
-     */
-    protected $amountService;
     /**
      * @var InterestService
      */
@@ -50,14 +44,12 @@ class   BondsEvolutionService
 
     /**
      * BondsEvolutionService constructor.
-     * @param AmountService $amountService
      * @param InterestService $interestService
      * @param EvolutionService $evolutionService
      * @param PortfolioService $portfolioService
      */
-    public function __construct(AmountService $amountService, InterestService $interestService, EvolutionService $evolutionService, PortfolioService $portfolioService)
+    public function __construct(InterestService $interestService, EvolutionService $evolutionService, PortfolioService $portfolioService)
     {
-        $this->amountService = $amountService;
         $this->interestService = $interestService;
         $this->evolutionService = $evolutionService;
         $this->portfolioService = $portfolioService;
@@ -96,15 +88,15 @@ class   BondsEvolutionService
 
         $curDate = clone $fromDate;
         while (true) {
-            $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-            $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount->getValue());
+            $amount = $this->getEvolutionForInterval($fromDate, $curDate);
+            $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount);
 
             $curDate = $curDate->add($interval);
             if ($curDate->format('U') >= $toDate->format('U')) {
                 $curDate = clone $toDate;
 
-                $amount = $this->getEvolutionAmountForInterval($fromDate, $curDate);
-                $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount->getValue());
+                $amount = $this->getEvolutionForInterval($fromDate, $curDate);
+                $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount);
 
                 break;
             }
@@ -116,14 +108,15 @@ class   BondsEvolutionService
     /**
      * @param \DateTime $fromDate
      * @param \DateTime $toDate
-     * @return Amount
+     * @return double
      */
     protected function getInterestForInterval(\DateTime $fromDate, \DateTime $toDate)
     {
         $amountFromInterest = $this->interestService->getInterestForInterval(
             $this->getPrincipalPortfolio()->getPrice(),
             $this->principal->getInterest(),
-            $fromDate->diff($toDate)
+            $fromDate,
+            $toDate
         );
 
         return $amountFromInterest;
@@ -135,6 +128,7 @@ class   BondsEvolutionService
     protected function getPrincipalPortfolio()
     {
         return $this->portfolioService->makePortfolio(
+            $this->principal->getSymbol(),
             $this->portfolio->getBalance(),
             $this->principal->getFaceValue(),
             $this->portfolio->getAcquisitionDate()
@@ -144,14 +138,14 @@ class   BondsEvolutionService
     /**
      * @param \DateTime $fromDate
      * @param \DateTime $toDate
-     * @return Amount
+     * @return double
      */
-    protected function getEvolutionAmountForInterval(\DateTime $fromDate, \DateTime $toDate)
+    protected function getEvolutionForInterval(\DateTime $fromDate, \DateTime $toDate)
     {
         $interestAmount = $this->getInterestForInterval($fromDate, $toDate);
         $principalAmount = $this->getPrincipalPortfolio()->getPrice();
         $acquisitionAmount = $this->portfolio->getPrice();
-
-        return $principalAmount->add($interestAmount)->sub($acquisitionAmount);
+        
+        return $principalAmount + $interestAmount - $acquisitionAmount;
     }
 }

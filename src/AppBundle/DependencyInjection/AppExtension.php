@@ -22,6 +22,6 @@ class AppExtension extends Extension
     
         $loader->load('controllers.yml');
         $loader->load('services.yml');
-    
     }
 }
+

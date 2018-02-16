@@ -15,6 +15,7 @@ namespace AppBundle\Infrastructure\Repository;
  */
 
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 
 abstract class EntityRepository extends \Doctrine\ORM\EntityRepository
@@ -25,6 +26,8 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository
         $this->_em = $entityManager;
         $this->_class = $entityManager->getClassMetadata($className);
         $this->_entityName = $className;
+    
+        Type::addType('type_date_interval', DateIntervalType::class);
     }
     public function getModelClass()
     {

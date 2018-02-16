@@ -13,8 +13,8 @@ AppBundle\Domain\Model\Crawling\BondsScreener:
         stamp:
             columns: stamp
     uniqueConstraints:
-        screenDate_ytm_symbol_bidQty_dirtyPrice_spreadDays:
-            columns: [ screen_date, ytm, symbol, bid_qty, dirty_price, spread_days ]
+        screenDate_ytm_symbol_askQty_dirtyPrice_spreadDays:
+            columns: [ screen_date, ytm, symbol, ask_qty, dirty_price, spread_days ]
 
     fields:
         symbol:

@@ -9,19 +9,13 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
-use AppBundle\Domain\Model\Trading\Amount;
 use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
-use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 
 class BondsService
 {
-    /**
-     * @var AmountService
-     */
-    protected $amountService;
     /**
      * @var InterestService
      */
@@ -33,16 +27,13 @@ class BondsService
     
     /**
      * BondsService constructor.
-     * @param AmountService $amountService
      * @param InterestService $interestService
      * @param BondsScreenerService $bondsScreenerService
      */
     public function __construct(
-        AmountService $amountService,
         InterestService $interestService,
         BondsScreenerService $bondsScreenerService)
     {
-        $this->amountService = $amountService;
         $this->interestService = $interestService;
         $this->bondsScreenerService = $bondsScreenerService;
     }
@@ -50,11 +41,11 @@ class BondsService
     /**
      * @param string $symbol
      * @param Interest $interest
-     * @param Amount $faceValue
+     * @param double $faceValue
      * @param \DateTime $maturityDate
      * @return PrincipalBonds
      */
-    public function makeBonds($symbol, Interest $interest, Amount $faceValue, \DateTime $maturityDate)
+    public function makeBonds($symbol, Interest $interest, $faceValue, \DateTime $maturityDate)
     {
         return (new PrincipalBonds())
             ->setSymbol($symbol)
@@ -66,16 +57,15 @@ class BondsService
     /**
      * @param $bondsSymbol
      * @return PrincipalBonds
+     * @throws InvalidArgumentException
      */
     public function buildBonds($bondsSymbol)
     {
-        $principal = $this->searchBonds($bondsSymbol);
-        return $this->makeBonds(
-            $principal[0],
-            $this->interestService->makeInterest($principal[1], new \DateInterval($principal[2])),
-            $this->amountService->buildAmount($principal[3], $principal[4]),
-            DateTimeInterval::getDate($principal[5])
-        );
+        $bonds = $this->listBonds();
+        if (array_key_exists($bondsSymbol, $bonds)) {
+            return $bonds[$bondsSymbol];
+        }
+        throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
     }
     
     /**
@@ -83,50 +73,18 @@ class BondsService
      */
     public function listBonds()
     {
-        $bonds = [];
-        foreach ($this->loadBonds() as $bondsSymbol => $bondsDetails) {
-            $bonds[$bondsSymbol] = $this->buildBonds($bondsSymbol);
-        }
-        return $bonds;
-    }
+        $bonds = $this->bondsScreenerService->loadBonds(['SBG20']); // @todo -> get the portfolio bonds always
     
-    /**
-     * @param $bondsSymbol
-     * @return mixed
-     * @throws InvalidArgumentException
-     */
-    protected function searchBonds($bondsSymbol)
-    {
-        $bonds = $this->loadBonds();
-        
-        if (!array_key_exists($bondsSymbol, $bonds)) {
-            throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
-        }
-        
-        return $bonds[$bondsSymbol];
-    }
-
-//    public function store
-    
-    /**
-     * @return array
-     */
-    protected function loadBonds()
-    {
-        $bonds = $this->bondsScreenerService->loadBonds(['SBG20']);
-        
         $return = [];
         foreach ($bonds as $bond) {
-            $return[$bond->getSymbol()] = [
+            $return[$bond->getSymbol()] = $this->makeBonds(
                 $bond->getSymbol(),
-                $bond->getInterest(),
-                'P1Y', // @todo load from Repository
-                (int) ($bond->getDirtyPrice() / $bond->getAsk()) * 100.00, // @todo load from Repository
-                'LEI', // @todo load from Repository
-                $bond->getMaturityDate()->format('Y-m-d')
-            ];
+                $this->interestService->makeInterest($bond->getInterest(), new \DateInterval('P1Y')), // @todo extract separately
+                (int) ($bond->getDirtyPrice() / $bond->getAsk()) * 100.00, // @todo extract separately
+                $bond->getMaturityDate()
+            );
         }
-        
+    
         return $return;
     }
 }

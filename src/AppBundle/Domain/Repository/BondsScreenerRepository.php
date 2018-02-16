@@ -17,10 +17,16 @@ interface BondsScreenerRepository
      * @param BondsScreener[] $bonds
      * @return bool
      */
-    public function storeBulk(array $bonds);
+    public function storeBonds(array $bonds);
     
     /**
      * @return BondsScreener[]
      */
-    public function loadDistinctBonds();
+    public function loadBonds();
+    
+    /**
+     * @param $symbol
+     * @return BondsScreener
+     */
+    public function loadBond($symbol);
 }

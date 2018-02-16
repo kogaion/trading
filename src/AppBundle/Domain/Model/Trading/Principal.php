@@ -12,6 +12,10 @@ namespace AppBundle\Domain\Model\Trading;
 abstract class Principal
 {
     /**
+     * @var int
+     */
+    protected $id;
+    /**
      * @var string
      */
     protected $symbol;
