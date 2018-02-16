@@ -17,4 +17,10 @@ interface PortfolioRepository
      * @return Portfolio[]
      */
     public function loadPortfolios();
+    
+    /**
+     * @param $symbol
+     * @return Portfolio
+     */
+    public function loadPortfolio($symbol);
 }

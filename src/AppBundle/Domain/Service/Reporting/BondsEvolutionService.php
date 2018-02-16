@@ -76,12 +76,12 @@ class BondsEvolutionService
     }
 
     /**
-     * @param \DateTime $fromDate
      * @param \DateInterval $interval
      * @return Evolution[]
      */
-    public function getEvolution(\DateTime $fromDate, \DateInterval $interval)
+    public function getEvolution(\DateInterval $interval)
     {
+        $fromDate = clone $this->portfolio->getAcquisitionDate();
         $toDate = clone $this->principal->getMaturityDate();
 
         $return = [];

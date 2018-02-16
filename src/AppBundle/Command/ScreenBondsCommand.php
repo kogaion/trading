@@ -10,22 +10,47 @@ namespace AppBundle\Command;
 
 
 use AppBundle\Domain\Model\Crawling\BondsScreener;
+use AppBundle\Domain\Model\Trading\Interest;
+use AppBundle\Domain\Model\Trading\PrincipalBonds;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
+use AppBundle\Domain\Model\Util\Formatter;
 use AppBundle\Domain\Model\Util\HttpException;
+use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Crawling\BondsScreenerService;
+use AppBundle\Domain\Service\Trading\BondsService;
+use AppBundle\Domain\Service\Trading\InterestService;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ScreenBondsCommand extends ContainerAwareCommand
 {
+    /**
+     * @var BondsScreenerService
+     */
     protected $bondsScreenerService;
+    /**
+     * @var BondsService
+     */
+    protected $bondsService;
+    /**
+     * @var InterestService
+     */
+    private $interestService;
     
-    public function __construct($name = null, BondsScreenerService $bondsScreenerService)
+    
+    public function __construct(
+        $name = null,
+        BondsScreenerService $bondsScreenerService,
+        BondsService $bondsService,
+        InterestService $interestService)
     {
         parent::__construct($name);
         $this->bondsScreenerService = $bondsScreenerService;
+        $this->bondsService = $bondsService;
+        $this->interestService = $interestService;
     }
     
     protected function configure()
@@ -43,13 +68,35 @@ class ScreenBondsCommand extends ContainerAwareCommand
             
             $output->writeln(["Connected. Going to bonds screener."]);
             $bondsIterator = $this->loadBondsScreener($client);
-            $output->writeln(["Found {$bondsIterator->count()} items."]);
+            $output->writeln(["Found {$bondsIterator->count()} items. Extracting items."]);
+            $bondsScreeners = $this->loadBondsScreenerFromDOM($bondsIterator);
             
-            $output->writeln(["Extracting bonds."]);
-            $bonds = $this->loadBondsFromDOM($bondsIterator);
+            foreach ($bondsScreeners as $key => $bs) {
+                try {
+                    // check if exists
+                    $this->bondsService->buildBonds($bs->getSymbol());
+                } catch (InvalidArgumentException $ex) {
+                    
+                    $output->writeln(["Found new bond {$bs->getSymbol()}."]);
+                    $bondCrawler = $this->loadBonds($client, $bs->getSymbol());
+                    
+                    $output->writeln(["Extracting bond {$bs->getSymbol()}."]);
+                    $bonds = $this->loadBondsFromDOM($bondCrawler, $bs->getSymbol());
+                    
+                    
+                    $output->writeln(["Saving new bond {$bs->getSymbol()}."]);
+                    if (!$this->bondsService->saveBond($bonds)) {
+                        $output->writeln("Skipping bond {$bonds->getSymbol()} for now. Check in BondsService::saveBond() why");
+                        unset($bondsScreeners[$key]);
+                        continue;
+                    }
+                    $output->writeln("Saved bond {$bonds->getSymbol()}.");
+                }
+            }
             
-            $output->writeln(["Saving " . count($bonds) . " bonds."]);
-            $this->bondsScreenerService->saveBonds($bonds);
+            
+            $output->writeln(["Saving " . count($bondsScreeners) . " items."]);
+            $this->bondsScreenerService->saveBonds($bondsScreeners);
             
             $output->writeln(['Done.']);
         } catch (HttpException $e) {
@@ -90,7 +137,7 @@ class ScreenBondsCommand extends ContainerAwareCommand
     private function loadBondsScreener(Client $client)
     {
         $crawler = $client->request('GET', $this->getContainer()->getParameter('tdv_url_bonds_screener'));
-        $crawler = $crawler->filter('div#ctl00_divAll tr');
+        $crawler = $crawler->filter('#ctl00_divAll tr');
         if (empty($crawler->getIterator()->count())) {
             throw new HttpException("Could not load bonds screener", HttpException::ERR_URI_FAILED);
         }
@@ -98,11 +145,12 @@ class ScreenBondsCommand extends ContainerAwareCommand
         return $crawler->getIterator();
     }
     
+    
     /**
      * @param \ArrayIterator $tableRows
      * @return BondsScreener[]
      */
-    private function loadBondsFromDOM(\ArrayIterator $tableRows)
+    private function loadBondsScreenerFromDOM(\ArrayIterator $tableRows)
     {
         $bonds = [];
         
@@ -125,13 +173,52 @@ class ScreenBondsCommand extends ContainerAwareCommand
                     ->setAskQty($cells->item($i++)->nodeValue)
                     ->setDirtyPrice($cells->item($i++)->nodeValue)
                     ->setYTM($cells->item($i++)->nodeValue)
-                    ->setMaturityDate($cells->item($i++)->nodeValue)
-                    ->setSpreadDays($cells->item($i++)->nodeValue)
-                    ->setInterest($cells->item($i++)->nodeValue);
+                    ->setSpreadDays($cells->item($i++)->nodeValue);
                 $bonds[] = $bondScreener;
             }
         }
         
         return $bonds;
+    }
+    
+    private function loadBonds(Client $client, $symbol)
+    {
+        $crawler = $client->request(
+            'GET',
+            $this->getContainer()->getParameter('tdv_url_bonds') . '?' . http_build_query(['Symbol' => $symbol])
+        );
+        $cr = $crawler->filter('div.pageHeader h1')->first();
+        if (false === stripos($cr->text(), $symbol)) {
+            throw new HttpException("Could not load bonds {$symbol}", HttpException::ERR_URI_FAILED);
+        }
+        
+        return $crawler;
+    }
+    
+    /**
+     * @param Crawler $crawler
+     * @param $symbol
+     * @return PrincipalBonds
+     */
+    private function loadBondsFromDOM(Crawler $crawler, $symbol)
+    {
+        $interestInterval = 'P1Y'; // @todo - default ?
+        
+        $interest = $crawler->filter("span#ctl00_c_ucBondsSymbolExtraInfo_QuotesBond_lblCurentFeeVal")->first()->text();
+        $interestType = $crawler->filter("span#ctl00_c_ucBondsSymbolExtraInfo_QuotesBond_lblIntrestTypeValue")->first()->text();
+        $faceValue = $crawler->filter("span#ctl00_c_ucBondsSymbolExtraInfo_QuotesBond_lblValueVal")->first()->text();
+        $maturityDate = $crawler->filter("span#ctl00_c_ucBondsSymbolExtraInfo_QuotesBond_lblEndDateValue")->first()->text();
+        
+        $bond = $this->bondsService->makeBond(
+            $symbol,
+            $this->interestService->makeInterest(
+                Formatter::toDouble($interest),
+                new \DateInterval($interestInterval),
+                (false !== stripos($interestType, 'fix') ? Interest::TYPE_FIXED : Interest::TYPE_VARIABLE)),
+            $faceValue,
+            Formatter::toDateTime($maturityDate)
+        );
+        
+        return $bond;
     }
 }

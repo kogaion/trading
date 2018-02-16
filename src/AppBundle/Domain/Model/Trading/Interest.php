@@ -9,8 +9,18 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
+use AppBundle\Domain\Model\Util\Formatter;
+
 class Interest
 {
+    const TYPE_FIXED = 'fixed';
+    const TYPE_VARIABLE = 'variable';
+    
+    /**
+     * @var int
+     */
+    protected $id;
+    
     /**
      * @var double
      */
@@ -19,6 +29,11 @@ class Interest
      * @var \DateInterval
      */
     protected $interval;
+    
+    /**
+     * @var string
+     */
+    protected $type;
 
     /**
      * @param double $percent
@@ -26,7 +41,7 @@ class Interest
      */
     public function setPercent($percent)
     {
-        $this->percent = $percent;
+        $this->percent = Formatter::toDouble($percent);
         return $this;
     }
 
@@ -54,5 +69,26 @@ class Interest
     public function getInterval()
     {
         return $this->interval;
+    }
+    
+    /**
+     * @param string $type
+     * @return Interest
+     */
+    public function setType($type)
+    {
+        if (in_array($type, [self::TYPE_FIXED, self::TYPE_VARIABLE])) {
+            $this->type =  $type;
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

@@ -17,11 +17,12 @@ class InterestService
     /**
      * @param double $percent
      * @param \DateInterval $interval
+     * @param string $type
      * @return Interest
      */
-    public function makeInterest($percent, \DateInterval $interval)
+    public function makeInterest($percent, \DateInterval $interval, $type = Interest::TYPE_FIXED)
     {
-        return (new Interest())->setPercent($percent)->setInterval($interval);
+        return (new Interest())->setPercent($percent)->setInterval($interval)->setType($type);
     }
     
     /**
@@ -30,6 +31,7 @@ class InterestService
      * @param \DateTime $fromDate
      * @param \DateTime $toDate
      * @return double
+     * @todo - different calculus for variable ?
      */
     public function getInterestForInterval($amount, Interest $interest, \DateTime $fromDate, \DateTime $toDate)
     {

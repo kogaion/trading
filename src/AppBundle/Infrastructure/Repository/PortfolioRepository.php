@@ -26,4 +26,13 @@ class PortfolioRepository extends EntityRepository implements Repo
     {
         return $this->findBy([], ['acquisitionDate' => 'ASC']);
     }
+    
+    /**
+     * @param $symbol
+     * @return Portfolio
+     */
+    public function loadPortfolio($symbol)
+    {
+        return $this->findOneBy(['symbol' => $symbol]);
+    }
 }

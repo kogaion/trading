@@ -1,0 +1,35 @@
+AppBundle\Domain\Model\Trading\Interest:
+    type: entity
+    repositoryClass: AppBundle\Domain\Repository\InterestRepository
+
+    table: interest
+    id:
+        id:
+            type: integer
+            generator: { strategy: "AUTO" }
+
+    fields:
+        percent:
+            column: ratio
+            type: decimal
+            scale: 4
+
+        type:
+            column: type
+            type: string
+            length: 10
+
+        interval:
+            column: "`interval`"
+            type: type_date_interval
+
+
+
+
+
+
+
+
+
+
+

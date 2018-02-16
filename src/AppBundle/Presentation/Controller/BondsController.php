@@ -10,6 +10,8 @@ namespace AppBundle\Presentation\Controller;
 
 
 use AppBundle\Domain\Model\Trading\Evolution;
+use AppBundle\Domain\Model\Trading\Portfolio;
+use AppBundle\Domain\Model\Trading\PrincipalBonds;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
@@ -18,11 +20,13 @@ use AppBundle\Domain\Service\Trading\CurrencyService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
 use AppBundle\Domain\Service\Trading\BondsService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BondsController extends Controller
 {
     public function listAction(
+        Request $request,
         BondsService $bondsService,
         PortfolioService $portfolioService,
         BondsEvolutionService $bondsEvolution,
@@ -30,66 +34,48 @@ class BondsController extends Controller
         CurrencyService $currencyService
     )
     {
-        $allBonds = $bondsService->listBonds();
+        $getOverInflation = $request->query->get('oi');
+        $getPositivePortfolios = $request->query->get('pp');
         
-        $series = [];
+        $allBonds = $bondsService->listBonds();
+        $portfolios = $portfolioService->listPortfolios();
+        
+        $bondsSeries = [];
+        foreach ($portfolios as $p) {
+            $b = $bondsService->buildBonds($p->getSymbol());
+            $bondsSeries[] = [$b, $p, true];
+        }
+        foreach ($allBonds as $b) {
+            $p = $portfolioService->buildVirtualPortfolio($b->getSymbol());
+            $bondsSeries[] = [$b, $p, false];
+        }
+        
+        
         /**
+         * Find out min and max dates for the graph
          * @var \DateTime $startDate
          * @var \DateTime $endDate
          */
         $startDate = $endDate = null;
+        array_walk($bondsSeries, function($data) use (&$startDate, &$endDate) {
+            /**
+             * @var PrincipalBonds $b
+             * @var Portfolio $p
+             */
+            $p = $data[1];
+            $b = $data[0];
+            $startDate = !$startDate ? $p->getAcquisitionDate() : min($startDate, $p->getAcquisitionDate());
+            $endDate = !$endDate ? $b->getMaturityDate() : max($endDate, $b->getMaturityDate());
+        });
         
-        $dateInterval = new \DateInterval('P10D');
-        
-        foreach ($allBonds as $bondsSymbol => $bonds) {
-            try {
-                $portfolio = $portfolioService->buildPortfolio($bondsSymbol);
-            } catch (InvalidArgumentException $e) {
-                throw $this->createNotFoundException("The bonds '{$bondsSymbol}' does not exist");
-            }
-            
-            $initialValue = $portfolio->getPrice();
-            $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo actually this might differ
-            
-            if ($initialValue == 0) {
-                continue;
-            }
-            
-            $bondsEvolution->setPrincipal($bonds);
-            $bondsEvolution->setPortfolio($portfolio);
-            $evolutions = $bondsEvolution->getEvolution(
-                $portfolio->getAcquisitionDate(),
-                $dateInterval
-            );
+        // increment interval, default currency
+        $dateInterval = new \DateInterval('P15D');
+        $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo how else?
     
-            // remove negative evolutions
-            if ($evolutions[count($evolutions) - 1]->getValue() < 0) {
-//                continue;
-            }
-            
-            $percentSeries = array_map(function (Evolution $evolution) use ($initialValue, $currency, &$startDate, &$endDate) {
-                if (null === $startDate || $startDate->format('U') > $evolution->getDate()->format('U')) {
-                    $startDate = clone $evolution->getDate();
-                }
-                if (null === $endDate || $endDate->format('U') < $evolution->getDate()->format('U')) {
-                    $endDate = clone $evolution->getDate();
-                }
-                return [
-                    'x' => $evolution->getDate()->format('U') * 1000,
-                    'y' => round($evolution->getValue() / $initialValue * 100, $currency->getPrecision()),
-                    'amount' => round($evolution->getValue(), $currency->getPrecision()),
-                    'initial' => round($initialValue, $currency->getPrecision()),
-                    'currency' => $currency->getSymbol(),
-                ];
-            }, $evolutions);
-            
-            $series[] = [
-                "name" => $bonds->getSymbol(),
-                "data" => $percentSeries,
-            ];
-        }
+        // the chart series
+        $series = [];
         
-        // add inflation
+        // add inflation series
         $inflationEvolutions = $inflatingEvolution->getEvolution($startDate, $endDate, $dateInterval);
         $inflationSeries = array_map(function (Evolution $evolution) {
             return [
@@ -101,6 +87,54 @@ class BondsController extends Controller
             "name" => 'Inflation',
             "data" => $inflationSeries,
         ];
+        
+        
+        foreach ($bondsSeries as $data) {
+    
+            /**
+             * @var PrincipalBonds $bonds
+             * @var Portfolio $portfolio
+             */
+            $bonds = $data[0];
+            $portfolio = $data[1];
+            $sticky = $data[2];
+            
+            $portfolioValue = $portfolio->getPrice();
+            if ($portfolioValue == 0) {
+                continue;
+            }
+            
+            $bondsEvolution->setPrincipal($bonds);
+            $bondsEvolution->setPortfolio($portfolio);
+            $evolutions = $bondsEvolution->getEvolution($dateInterval);
+            
+            $lastIndex = count($evolutions) - 1;
+    
+            // skip negative evolutions
+            if ($getPositivePortfolios && !$sticky && $evolutions[$lastIndex]->getValue() < 0) {
+                continue;
+            }
+            
+            // remove portfolios that do not get above inflation
+            if ($getOverInflation && !$sticky && round($evolutions[$lastIndex]->getValue() / $portfolioValue * 100, $currency->getPrecision()) < $inflationEvolutions[$lastIndex]->getValue()) {
+                continue;
+            }
+            
+            $percentSeries = array_map(function (Evolution $evolution) use ($portfolioValue, $currency) {
+                return [
+                    'x' => $evolution->getDate()->format('U') * 1000,
+                    'y' => round($evolution->getValue() / $portfolioValue * 100, $currency->getPrecision()),
+                    'amount' => round($evolution->getValue(), $currency->getPrecision()),
+                    'initial' => round($portfolioValue, $currency->getPrecision()),
+                    'currency' => $currency->getSymbol(),
+                ];
+            }, $evolutions);
+            
+            $series[] = [
+                "name" => $bonds->getSymbol() . ($sticky ? '(!)' : ''),
+                "data" => $percentSeries,
+            ];
+        }
         
         return $this->render("bonds/list.html.twig", [
             "series" => $series,
@@ -119,17 +153,15 @@ class BondsController extends Controller
     {
         try {
             $bonds = $bondsService->buildBonds($bondsSymbol);
-            $portfolio = $portfolioService->buildPortfolio($bondsSymbol);
+            $portfolio = $portfolioService->buildPortfolio($bondsSymbol) ?: $portfolioService->buildVirtualPortfolio($bondsSymbol);
         } catch (InvalidArgumentException $e) {
             throw $this->createNotFoundException("The bonds '{$bondsSymbol}' does not exist");
         }
         
         $bondsEvolution->setPrincipal($bonds);
         $bondsEvolution->setPortfolio($portfolio);
-        $evolutions = $bondsEvolution->getEvolution(
-            $portfolio->getAcquisitionDate(),
-            new \DateInterval('P7D')
-        );
+        
+        $evolutions = $bondsEvolution->getEvolution(new \DateInterval('P15D'));
         
         /**
          * @var \DateTime $dateStart

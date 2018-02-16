@@ -26,11 +26,12 @@ class BondsScreenerService
     
     /**
      * @param BondsScreener[] $bonds
+     * @return bool
      */
     public function saveBonds($bonds)
     {
         if (empty($bonds)) {
-            return;
+            return false;
         }
         
         $nonEmptyBonds = [];
@@ -41,14 +42,13 @@ class BondsScreenerService
             $nonEmptyBonds[] = $b;
         }
         
-        $this->repository->storeBonds($nonEmptyBonds);
+        return $this->repository->storeBonds($nonEmptyBonds);
     }
     
     /**
-     * @param array $includeSymbols
      * @return BondsScreener[]
      */
-    public function loadBonds($includeSymbols = [])
+    public function loadBonds()
     {
         $bonds = $this->repository->loadBonds();
         if (empty($bonds)) {
@@ -56,14 +56,9 @@ class BondsScreenerService
         }
         
         foreach ($bonds as $key => $b) {
-            if (in_array($b->getSymbol(), $includeSymbols)) {
-                continue;
-            }
-            
             if ($b->getYTM() <= 0 || $b->getAsk() <= 0) {
                 unset($bonds[$key]);
             }
-            
         }
         
         return $bonds;

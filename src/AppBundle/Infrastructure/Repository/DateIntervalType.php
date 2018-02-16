@@ -42,8 +42,12 @@ class DateIntervalType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if ($value instanceof \DateInterval) {
-            return $value->format('%R,%a,P%yY%mM%dDT%hH%iM%sS');
+            $format = $value->format(',%R,P%yY%mM%dDT%hH%iM%sS');
+            if ('(unknown)' != ($days = $value->format('%a'))) {
+                $format = "{$days}{$format}";
+            }
+            return $format;
         }
-        return '+,0,P0D';
+        return ',+,P0D';
     }
 }

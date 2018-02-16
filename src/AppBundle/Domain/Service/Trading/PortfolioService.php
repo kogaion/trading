@@ -9,6 +9,7 @@
 namespace AppBundle\Domain\Service\Trading;
 
 
+use AppBundle\Domain\Model\Crawling\BondsScreener;
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Repository\BondsScreenerRepository;
@@ -53,58 +54,26 @@ class PortfolioService
     public function listPortfolios()
     {
         // get existing bonds
-        $return = $this->portfolioRepository->loadPortfolios();
-        
-        $interestedInBonds = ['SBG20', 'ADRS18', 'BNET19', 'BNET22', 'CFS18', 'FRU21', 'INV22'];
-        foreach ($interestedInBonds as $symbol) {
-            $return[] = $this->buildVirtualBondPortfolio($symbol);
-        }
-        
-        $interestedInShares = [];
-        foreach ($interestedInShares as $symbol) {
-            $return[] = $this->buildVirtualSharePortfolio($symbol);
-        }
-        
-        return $return;
+        return $this->portfolioRepository->loadPortfolios();
     }
 
     /**
      * @param $symbol
      * @return Portfolio
-     * @todo load from Repository
      */
     public function buildPortfolio($symbol)
     {
-        $portfolio = $this->listPortfolios();
-        foreach ($portfolio as $p) {
-            if ($p->getSymbol() == $symbol) {
-                return $p;
-            }
-        }
-        
-        $p = $this->buildVirtualBondPortfolio($symbol);
-        if ($p !== null) {
-            return $p;
-        }
-    
-        $p = $this->buildVirtualSharePortfolio($symbol);
-        if ($p !== null) {
-            return $p;
-        }
-        
-        // @todo !!! the same symbol can be both a BOND and a SHARE ... which one gets first?
-        
-        return $this->makePortfolio($symbol, 0, 0, DateTimeInterval::getToday());
+        return $this->portfolioRepository->loadPortfolio($symbol);
     }
     
     /**
      * @param $symbol
      * @return Portfolio|null
      */
-    protected function buildVirtualBondPortfolio($symbol)
+    public function buildVirtualPortfolio($symbol)
     {
         $bonds = $this->bondsScreenerRepository->loadBond($symbol);
-        if ($bonds->getSymbol() == $symbol) {
+        if ($bonds instanceof BondsScreener && $bonds->getSymbol() == $symbol) {
             return $this->makePortfolio(
                 $symbol,
                 $bonds->getAskQty(),
@@ -112,15 +81,6 @@ class PortfolioService
                 DateTimeInterval::getToday()
             );
         }
-        return null;
-    }
-    
-    /**
-     * @param $symbol
-     * @return Portfolio|null
-     */
-    protected function buildVirtualSharePortfolio($symbol)
-    {
         return null;
     }
 }

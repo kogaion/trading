@@ -8,7 +8,7 @@ AppBundle\Domain\Model\Trading\PrincipalBonds:
             type: integer
             generator: { strategy: "AUTO" }
 
-    indexes:
+    uniqueConstraints:
         symbol:
             columns: symbol
 
@@ -23,16 +23,16 @@ AppBundle\Domain\Model\Trading\PrincipalBonds:
         maturityDate:
             column: maturity_date
             type: date
+
+    oneToOne:
         interest:
-            column: interest
-            type: decimal
-            scale: 4
-        interestType:
-            column: interest_type
-            columnDefinition: enum("fixed", "variable")
-        interestInterval:
-            column: interest_interval
-            type: type_date_interval
+            targetEntity: AppBundle\Domain\Model\Trading\Interest
+            cascade: [all]
+            joinColumn:
+                name: interest
+                referencedColumnName: id
+
+
 
 
 

@@ -46,17 +46,10 @@ class BondsScreener
      */
     protected $YTM;
     /**
-     * @var \DateTime
-     */
-    protected $maturityDate;
-    /**
      * @var int
      */
     protected $spreadDays;
-    /**
-     * @var double
-     */
-    protected $interest;
+    
     /**
      * @var \DateTime
      */
@@ -107,32 +100,12 @@ class BondsScreener
     }
     
     /**
-     * @param mixed $maturityDate
-     * @return BondsScreener
-     */
-    public function setMaturityDate($maturityDate)
-    {
-        $this->maturityDate = Formatter::toDateTime($maturityDate);
-        return $this;
-    }
-    
-    /**
      * @param mixed $spreadDays
      * @return BondsScreener
      */
     public function setSpreadDays($spreadDays)
     {
         $this->spreadDays = Formatter::toInt($spreadDays);
-        return $this;
-    }
-    
-    /**
-     * @param mixed $interest
-     * @return BondsScreener
-     */
-    public function setInterest($interest)
-    {
-        $this->interest = Formatter::toDouble($interest);
         return $this;
     }
     
@@ -246,14 +219,6 @@ class BondsScreener
     }
     
     /**
-     * @return float
-     */
-    public function getInterest()
-    {
-        return $this->interest;
-    }
-    
-    /**
      * @return int
      */
     public function getSpreadDays()
@@ -275,14 +240,6 @@ class BondsScreener
     public function getYTM()
     {
         return $this->YTM;
-    }
-    
-    /**
-     * @return \DateTime
-     */
-    public function getMaturityDate()
-    {
-        return $this->maturityDate;
     }
     
     /**

@@ -12,6 +12,7 @@ namespace AppBundle\Domain\Service\Trading;
 use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Trading\PrincipalBonds;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
+use AppBundle\Domain\Repository\BondsRepository;
 use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 
 class BondsService
@@ -24,18 +25,25 @@ class BondsService
      * @var BondsScreenerService
      */
     private $bondsScreenerService;
+    /**
+     * @var BondsRepository
+     */
+    private $bondsRepository;
     
     /**
      * BondsService constructor.
      * @param InterestService $interestService
+     * @param BondsRepository $bondsRepository
      * @param BondsScreenerService $bondsScreenerService
      */
     public function __construct(
         InterestService $interestService,
+        BondsRepository $bondsRepository,
         BondsScreenerService $bondsScreenerService)
     {
         $this->interestService = $interestService;
         $this->bondsScreenerService = $bondsScreenerService;
+        $this->bondsRepository = $bondsRepository;
     }
     
     /**
@@ -45,7 +53,7 @@ class BondsService
      * @param \DateTime $maturityDate
      * @return PrincipalBonds
      */
-    public function makeBonds($symbol, Interest $interest, $faceValue, \DateTime $maturityDate)
+    public function makeBond($symbol, Interest $interest, $faceValue, \DateTime $maturityDate)
     {
         return (new PrincipalBonds())
             ->setSymbol($symbol)
@@ -55,17 +63,31 @@ class BondsService
     }
     
     /**
+     * @param PrincipalBonds $bond
+     * @return bool
+     */
+    public function saveBond(PrincipalBonds $bond)
+    {
+        // @todo ignore Variable interest bonds, for now
+        if ($bond->getInterest()->getType() == Interest::TYPE_VARIABLE) {
+            return false;
+        }
+        
+        return $this->bondsRepository->storeBond($bond);
+    }
+    
+    /**
      * @param $bondsSymbol
      * @return PrincipalBonds
      * @throws InvalidArgumentException
      */
     public function buildBonds($bondsSymbol)
     {
-        $bonds = $this->listBonds();
-        if (array_key_exists($bondsSymbol, $bonds)) {
-            return $bonds[$bondsSymbol];
+        $bond = $this->bondsRepository->loadBond($bondsSymbol);
+        if (!($bond instanceof PrincipalBonds) || $bond->getSymbol() != $bondsSymbol) {
+            throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
         }
-        throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
+        return $bond;
     }
     
     /**
@@ -73,18 +95,6 @@ class BondsService
      */
     public function listBonds()
     {
-        $bonds = $this->bondsScreenerService->loadBonds(['SBG20']); // @todo -> get the portfolio bonds always
-    
-        $return = [];
-        foreach ($bonds as $bond) {
-            $return[$bond->getSymbol()] = $this->makeBonds(
-                $bond->getSymbol(),
-                $this->interestService->makeInterest($bond->getInterest(), new \DateInterval('P1Y')), // @todo extract separately
-                (int) ($bond->getDirtyPrice() / $bond->getAsk()) * 100.00, // @todo extract separately
-                $bond->getMaturityDate()
-            );
-        }
-    
-        return $return;
+        return $this->bondsRepository->loadBonds();
     }
 }
