@@ -27,7 +27,7 @@ AppBundle\Domain\Model\Trading\PrincipalBonds:
     oneToOne:
         interest:
             targetEntity: AppBundle\Domain\Model\Trading\Interest
-            cascade: [all]
+            cascade: ["all"]
             joinColumn:
                 name: interest
                 referencedColumnName: id

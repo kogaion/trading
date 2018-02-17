@@ -20,12 +20,11 @@ use AppBundle\Domain\Service\Crawling\BondsScreenerService;
 use AppBundle\Domain\Service\Trading\BondsService;
 use AppBundle\Domain\Service\Trading\InterestService;
 use Goutte\Client;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ScreenBondsCommand extends ContainerAwareCommand
+class ScreenBondsCommand extends TradevilleCommand
 {
     /**
      * @var BondsScreenerService
@@ -67,9 +66,10 @@ class ScreenBondsCommand extends ContainerAwareCommand
             $client = $this->connect();
             
             $output->writeln(["Connected. Going to bonds screener."]);
-            $bondsIterator = $this->loadBondsScreener($client);
-            $output->writeln(["Found {$bondsIterator->count()} items. Extracting items."]);
-            $bondsScreeners = $this->loadBondsScreenerFromDOM($bondsIterator);
+            $crawler = $this->loadBondsScreener($client);
+            
+            $output->writeln(["Extracting bonds."]);
+            $bondsScreeners = $this->loadBondsScreenerFromDOM($crawler);
             
             foreach ($bondsScreeners as $key => $bs) {
                 try {
@@ -77,16 +77,15 @@ class ScreenBondsCommand extends ContainerAwareCommand
                     $this->bondsService->buildBonds($bs->getSymbol());
                 } catch (InvalidArgumentException $ex) {
                     
-                    $output->writeln(["Found new bond {$bs->getSymbol()}."]);
+                    $output->write(["Found new bond {$bs->getSymbol()}."]);
                     $bondCrawler = $this->loadBonds($client, $bs->getSymbol());
                     
-                    $output->writeln(["Extracting bond {$bs->getSymbol()}."]);
+                    $output->write(["Extracting bond {$bs->getSymbol()}."]);
                     $bonds = $this->loadBondsFromDOM($bondCrawler, $bs->getSymbol());
                     
-                    
-                    $output->writeln(["Saving new bond {$bs->getSymbol()}."]);
+                    $output->write(["Saving new bond {$bs->getSymbol()}."]);
                     if (!$this->bondsService->saveBond($bonds)) {
-                        $output->writeln("Skipping bond {$bonds->getSymbol()} for now. Check in BondsService::saveBond() why");
+                        $output->writeln("Skipping bond {$bonds->getSymbol()} for now.");
                         unset($bondsScreeners[$key]);
                         continue;
                     }
@@ -110,57 +109,43 @@ class ScreenBondsCommand extends ContainerAwareCommand
         }
     }
     
-    private function connect()
-    {
-        $client = new Client();
-        $crawler = $client->request('GET', $this->getContainer()->getParameter('tdv_url_login'));
-        
-        $form = $crawler->selectButton('Login')->form();
-        $form['cont'] = $this->getContainer()->getParameter('tdv_cont');
-        $form['pw'] = $this->getContainer()->getParameter('tdv_pw');
-        $form['platformType']->select('rbSt20');
-        $crawler = $client->submit($form);
-        
-        $crawler = $crawler->filter('span#ctl00_h_ucLogin_lblHomeNume');
-        if (empty($crawler)) {
-            throw new HttpException("Could not login.", HttpException::ERR_LOGIN_FAILED);
-        }
-        
-        return $client;
-    }
+    
     
     /**
      * @param Client $client
-     * @return \ArrayIterator
+     * @return Crawler
      * @throws HttpException
      */
     private function loadBondsScreener(Client $client)
     {
         $crawler = $client->request('GET', $this->getContainer()->getParameter('tdv_url_bonds_screener'));
-        $crawler = $crawler->filter('#ctl00_divAll tr');
+        $crawler = $crawler->filter('#ctl00_divAll');
         if (empty($crawler->getIterator()->count())) {
             throw new HttpException("Could not load bonds screener", HttpException::ERR_URI_FAILED);
         }
         
-        return $crawler->getIterator();
+        return $crawler;
     }
     
     
     /**
-     * @param \ArrayIterator $tableRows
+     * @param Crawler $crawler
      * @return BondsScreener[]
      */
-    private function loadBondsScreenerFromDOM(\ArrayIterator $tableRows)
+    private function loadBondsScreenerFromDOM(Crawler $crawler)
     {
+        $crawler = $crawler->filter('#ctl00_divAll tr');
+        $tableRows = $crawler->getIterator();
         $bonds = [];
         
         foreach ($tableRows as $key => $row) {
             if ($row instanceof \DOMElement) {
+    
+                $cells = $row->childNodes;
+                
                 if ($row->getAttribute('class') == 'header') {
                     continue;
                 }
-                
-                $cells = $row->childNodes;
                 
                 $i = 0;
                 $bondScreener = new BondsScreener();

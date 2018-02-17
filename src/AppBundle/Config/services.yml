@@ -43,9 +43,15 @@ services:
     BondsScreenerService:
         class: 'AppBundle\Domain\Service\Crawling\BondsScreenerService'
 
+    SharesScreenerService:
+        class: 'AppBundle\Domain\Service\Crawling\SharesScreenerService'
+
     #################
     #commands
     #################
 
     AppBundle\Command\ScreenBondsCommand:
+        tags: [console.command]
+
+    AppBundle\Command\ScreenSharesCommand:
         tags: [console.command]

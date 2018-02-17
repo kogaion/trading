@@ -18,8 +18,11 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
 
-    tdv_url_login: https://2.tradeville.eu/Trading/Loginq.aspx
-    tdv_cont: some-account-here
-    tdv_pw: some-password-here
-    tdv_url_bonds_screener: https://2.tradeville.eu/Trading/ReportsAndQuotes/BondScreener.aspx
-    tdv_url_bonds: https://2.tradeville.eu/Trading/ReportsAndQuotes/QuotesBonds.aspx
+    tdv_cont: "tradeville-account-here"
+    tdv_pw: "tradeville-password-here"
+    tdv_url_login: "https://2.tradeville.eu/Trading/Loginq.aspx"
+    tdv_url_bonds_screener: "https://2.tradeville.eu/Trading/ReportsAndQuotes/BondScreener.aspx"
+    tdv_url_bonds: "https://2.tradeville.eu/Trading/ReportsAndQuotes/QuotesBonds.aspx"
+    tdv_url_shares_screener: "https://2.tradeville.eu/Trading/Transaction/PersonalListsGrid.aspx"
+    tdv_url_shares_screener_page_id: "the-id-of-the-custom-page-with-shares-in-tradeville"
+    tdv_url_shares: "https://2.tradeville.eu/Trading/ReportsAndQuotes/QuotesShares.aspx"

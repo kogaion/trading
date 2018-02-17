@@ -1,0 +1,55 @@
+AppBundle\Domain\Model\Crawling\SharesScreener:
+    type: entity
+    repositoryClass: AppBundle\Domain\Repository\SharesScreenerRepository
+
+    table: shares_screener
+    id:
+        id:
+            type: integer
+            generator: { strategy: "AUTO" }
+
+    indexes:
+        symbol:
+            columns: symbol
+        stamp:
+            columns: stamp
+
+    uniqueConstraints:
+        screenDate_symbol_ask_lastPrice_referenceDate_referencePrice:
+            columns: [ screen_date, symbol, ask, last_price, reference_date, reference_price ]
+
+    fields:
+        symbol:
+            type: string
+            length: 50
+        bid:
+            type: decimal
+            scale: 4
+        ask:
+            type: decimal
+            scale: 4
+        lastPrice:
+            type: decimal
+            scale: 4
+            column: last_price
+        variation:
+            type: decimal
+            scale: 4
+        referenceDate:
+            column: reference_date
+            type: datetimetz
+        referencePrice:
+            type: decimal
+            scale: 4
+            column: reference_price
+        screenDate:
+            type: date
+            column: screen_date
+        date:
+            column: stamp
+            type: datetimetz
+
+
+
+
+
