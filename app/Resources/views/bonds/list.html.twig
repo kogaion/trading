@@ -32,10 +32,10 @@
                     type: 'spline'
                 },
                 title: {
-                    text: 'Bonds profit evolution'
+                    text: '{{ title|e('js') }}'
                 },
                 subtitle: {
-                    text: 'Period: {{ startDate|e('js') }} - {{ endDate|e('js') }}'
+                    text: '{{ subtitle|e('js') }}'
                 },
                 xAxis: {
                     type: 'datetime',
@@ -44,12 +44,12 @@
                         year: '%y'
                     },
                     title: {
-                        text: 'Date'
+                        text: '{{ xLabel|e('js') }}'
                     }
                 },
                 yAxis: {
                     title: {
-                        text: 'Profit ratio (%)'
+                        text: '{{ yLabel|e('js') }}'
                     },
                     plotLines: [{
                         color:'#000000',

@@ -22,9 +22,12 @@ services:
         class: 'AppBundle\Domain\Service\Trading\BondsService'
         arguments: ['@AmountService', '@InterestService']
 
+    CommissionService:
+        class: 'AppBundle\Domain\Service\Crawling\CommissionService'
+
     PortfolioService:
         class: 'AppBundle\Domain\Service\Trading\PortfolioService'
-        arguments: ['@AmountService']
+        arguments: ['@CommissionService']
 
     EvolutionService:
         class: 'AppBundle\Domain\Service\Trading\EvolutionService'

@@ -10,6 +10,7 @@ namespace AppBundle\Domain\Service\Trading;
 
 
 use AppBundle\Domain\Model\Crawling\BondsScreener;
+use AppBundle\Domain\Model\Trading\Commission;
 use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Repository\BondsScreenerRepository;
@@ -25,11 +26,22 @@ class PortfolioService
      * @var PortfolioRepository
      */
     private $portfolioRepository;
+    /**
+     * @var CommissionService
+     */
+    private $commissionService;
     
-    public function __construct(PortfolioRepository $portfolioRepository, BondsScreenerRepository $bondsScreenerRepository)
+    /**
+     * PortfolioService constructor.
+     * @param CommissionService $commissionService
+     * @param PortfolioRepository $portfolioRepository
+     * @param BondsScreenerRepository $bondsScreenerRepository
+     */
+    public function __construct(CommissionService $commissionService, PortfolioRepository $portfolioRepository, BondsScreenerRepository $bondsScreenerRepository)
     {
         $this->bondsScreenerRepository = $bondsScreenerRepository;
         $this->portfolioRepository = $portfolioRepository;
+        $this->commissionService = $commissionService;
     }
     
     /**
@@ -60,6 +72,7 @@ class PortfolioService
     /**
      * @param $symbol
      * @return Portfolio
+     * @todo - multiple portfolios for the same symbol :)
      */
     public function buildPortfolio($symbol)
     {
@@ -68,17 +81,20 @@ class PortfolioService
     
     /**
      * @param $symbol
+     * @param float|null $price
+     * @param string $startingDate
      * @return Portfolio|null
      */
-    public function buildVirtualPortfolio($symbol)
+    public function buildVirtualPortfolio($symbol, $price = null, $startingDate = null)
     {
         $bonds = $this->bondsScreenerRepository->loadBond($symbol);
         if ($bonds instanceof BondsScreener && $bonds->getSymbol() == $symbol) {
+            $price  = $price ?: $bonds->getDirtyPrice();
             return $this->makePortfolio(
                 $symbol,
                 $bonds->getAskQty(),
-                $bonds->getDirtyPrice(), // @todo -> add commission !!!
-                DateTimeInterval::getToday()
+                $price + $this->commissionService->getBondsCommission($price),
+                DateTimeInterval::getDate($startingDate ?: 'today')
             );
         }
         return null;
