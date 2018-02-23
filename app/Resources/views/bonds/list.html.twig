@@ -29,7 +29,8 @@
 
             Highcharts.chart('serieslabelspercent', {
                 chart: {
-                    type: 'spline'
+                    type: 'line',
+                    zoomType: 'x'
                 },
                 title: {
                     text: '{{ title|e('js') }}'

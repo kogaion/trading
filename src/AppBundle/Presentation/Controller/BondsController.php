@@ -54,10 +54,10 @@ class BondsController extends Controller
         // increment interval, default currency
         $dateInterval = new \DateInterval('P10D');
         $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo how else?
-    
+        
         $allBonds = $bondsService->listBonds();
         $portfolios = $portfolioService->listPortfolios();
-    
+        
         $bondsSeries = [];
         foreach ($portfolios as $p) {
             $b = $bondsService->buildBonds($p->getSymbol());
@@ -67,7 +67,7 @@ class BondsController extends Controller
             $p = $portfolioService->buildVirtualPortfolio($b->getSymbol(), null, $virtualPortfolioStartDate);
             $bondsSeries[] = [$b, $p, false];
         }
-    
+        
         list($series, $startDate, $endDate) = $this->getBondsSeries(
             $request,
             $bondsEvolution,
@@ -116,14 +116,14 @@ class BondsController extends Controller
         
         try {
             $bonds = $bondsService->buildBonds($bondsSymbol);
-    
+            
             $bondsSeries = [];
             $portfolio = $portfolioService->buildPortfolio($bondsSymbol);
             if ($portfolio) {
                 $bondsSeries[] = [$bonds, $portfolio, true];
-            } else {
-                $bondsSeries[] = [$bonds, $portfolioService->buildVirtualPortfolio($bondsSymbol, null, $virtualPortfolioStartDate), false];
             }
+            
+            $bondsSeries[] = [$bonds, $portfolioService->buildVirtualPortfolio($bondsSymbol, null, $virtualPortfolioStartDate), false];
             
             if ($simulatePrice) {
                 foreach ($simulatePrice as $key => $simulatedPrice) {
@@ -135,7 +135,7 @@ class BondsController extends Controller
             // increment interval, default currency
             $dateInterval = new \DateInterval('P10D');
             $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo how else?
-    
+            
             list($series, $startDate, $endDate) = $this->getBondsSeries(
                 $request,
                 $bondsEvolution,
@@ -252,9 +252,9 @@ class BondsController extends Controller
         }, $evolutions);
         
         return [
-            'series'    => $percentSeries,
-            'minDate'   => $minDate,
-            'maxDate'   => $maxDate,
+            'series' => $percentSeries,
+            'minDate' => $minDate,
+            'maxDate' => $maxDate,
         ];
     }
     
@@ -322,7 +322,7 @@ class BondsController extends Controller
             }
             
             $symbol = $bonds->getSymbol();
-            $names[$symbol] = (isset($names[$symbol]) ? ++ $names[$symbol] : 1);
+            $names[$symbol] = (isset($names[$symbol]) ? ++$names[$symbol] : 1);
             $seriesData = $this->getSeries($portfolioValue, $evolutions, $currency);
             $series[] = [
                 "name" => $symbol . ($sticky ? '(!)' : '') . ($names[$symbol] > 1 ? ' #' . $names[$symbol] : ''),
@@ -333,7 +333,7 @@ class BondsController extends Controller
             $startDate = $startDate ? min($seriesData['minDate'], $startDate) : $seriesData['minDate'];
             $endDate = $endDate ? max($seriesData['maxDate'], $endDate) : $seriesData['maxDate'];
         }
-    
+        
         // add inflation series
         $inflationEvolutions = $inflatingEvolution->getEvolution($startDate, $endDate, $dateInterval);
         $seriesData = $this->getSeries(100, $inflationEvolutions, null);

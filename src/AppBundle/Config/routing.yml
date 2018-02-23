@@ -1,9 +1,10 @@
 bonds_list:
-    path: /bonds
-    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:listAction' }
+    path: /bonds{trailingSlash}
+    defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:listAction', trailingSlash : "/" }
+    requirements: { trailingSlash : "[/]{0,1}" }
 
 bonds_calculus:
-    path: /bonds/calculus
+    path: /bonds/calculus/
     defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController::calculusAction' }
 
 bonds_view:
