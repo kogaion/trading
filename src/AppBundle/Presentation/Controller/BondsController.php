@@ -120,7 +120,9 @@ class BondsController extends Controller
             $bondsSeries = [];
             $portfolio = $portfolioService->buildPortfolio($bondsSymbol);
             if ($portfolio) {
-                $bondsSeries[] = [$bonds, $portfolio, true];
+                foreach ($portfolio as $p) {
+                    $bondsSeries[] = [$bonds, $p, true];
+                }
             }
             
             $bondsSeries[] = [$bonds, $portfolioService->buildVirtualPortfolio($bondsSymbol, null, $virtualPortfolioStartDate), false];

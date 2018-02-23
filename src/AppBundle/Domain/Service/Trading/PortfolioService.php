@@ -15,6 +15,7 @@ use AppBundle\Domain\Model\Trading\Portfolio;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Repository\BondsScreenerRepository;
 use AppBundle\Domain\Repository\PortfolioRepository;
+use AppBundle\Domain\Repository\PortfolioSearch;
 
 class PortfolioService
 {
@@ -71,12 +72,13 @@ class PortfolioService
 
     /**
      * @param $symbol
-     * @return Portfolio
-     * @todo - multiple portfolios for the same symbol :)
+     * @return Portfolio[]
      */
     public function buildPortfolio($symbol)
     {
-        return $this->portfolioRepository->loadPortfolio($symbol);
+        $search = new PortfolioSearch();
+        $search->symbol = $symbol;
+        return $this->portfolioRepository->loadPortfolios($search);
     }
     
     /**

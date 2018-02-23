@@ -14,13 +14,14 @@ use AppBundle\Domain\Model\Trading\Portfolio;
 interface PortfolioRepository
 {
     /**
+     * @param PortfolioSearch|null $search
      * @return Portfolio[]
      */
-    public function loadPortfolios();
+    public function loadPortfolios(PortfolioSearch $search = null);
     
     /**
      * @param $symbol
      * @return Portfolio
      */
-    public function loadPortfolio($symbol);
+//    public function loadPortfolio($symbol);
 }
