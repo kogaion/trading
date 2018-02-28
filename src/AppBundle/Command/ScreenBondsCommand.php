@@ -147,18 +147,17 @@ class ScreenBondsCommand extends TradevilleCommand
                     continue;
                 }
                 
-                $i = 0;
                 $bondScreener = new BondsScreener();
                 $bondScreener
                     ->setDate(DateTimeInterval::getDate())
-                    ->setSymbol($cells->item($i++)->nodeValue)
-                    ->setBidQty($cells->item($i++)->nodeValue)
-                    ->setBid($cells->item($i++)->nodeValue)
-                    ->setAsk($cells->item($i++)->nodeValue)
-                    ->setAskQty($cells->item($i++)->nodeValue)
-                    ->setDirtyPrice($cells->item($i++)->nodeValue)
-                    ->setYTM($cells->item($i++)->nodeValue)
-                    ->setSpreadDays($cells->item($i++)->nodeValue);
+                    ->setSymbol($cells->item(0)->nodeValue)
+                    ->setBidQty($cells->item(1)->nodeValue)
+                    ->setBid($cells->item(2)->nodeValue)
+                    ->setAsk($cells->item(3)->nodeValue)
+                    ->setAskQty($cells->item(4)->nodeValue)
+                    ->setDirtyPrice($cells->item(5)->nodeValue)
+                    ->setYTM($cells->item(6)->nodeValue)
+                    ->setSpreadDays($cells->item(8)->nodeValue);
                 $bonds[] = $bondScreener;
             }
         }
