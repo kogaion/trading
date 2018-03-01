@@ -20,8 +20,8 @@ interface PortfolioRepository
     public function loadPortfolios(PortfolioSearch $search = null);
     
     /**
-     * @param $symbol
-     * @return Portfolio
+     * @param Portfolio $p
+     * @return bool
      */
-//    public function loadPortfolio($symbol);
+    public function storePortfolio($p);
 }

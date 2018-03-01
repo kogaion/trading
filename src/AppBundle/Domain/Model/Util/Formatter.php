@@ -14,7 +14,7 @@ class Formatter
     public static function toDouble($param, $decPoint = '.', $thousandSep = ',')
     {
         if (!is_double($param)) {
-            $param = floatval(str_replace([$thousandSep, $decPoint], ['', '.'], $param . ""));
+            $param = floatval(str_replace([$thousandSep, $decPoint], ['', '.'], trim($param)));
         }
         return (double) $param;
     }
@@ -30,8 +30,8 @@ class Formatter
     public static function toDateTime($param, $format = 'm/d/Y')
     {
         if (!($param instanceof \DateTime)) {
-            $param = \DateTime::createFromFormat($format, $param);
-            if (false === stripos($format, 'h')) {
+            $param = \DateTime::createFromFormat($format, trim($param));
+            if ($param instanceof \DateTime && false === stripos($format, 'h')) {
                 $param->setTime(0, 0, 0);
             }
         }

@@ -22,12 +22,17 @@ class ScreenTradeville extends TradevilleCommand
             ->setHelp('Get everything from Tradeville');
     }
     
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $command = $this->getApplication()->find('screen:bonds');
-        $returnCode = $command->run(new ArrayInput([]), $output);
-    
-        $command = $this->getApplication()->find('screen:shares');
-        $returnCode = $command->run(new ArrayInput([]), $output);
+        $commands = ['screen:bonds', 'screen:shares', 'screen:portfolio'];
+        foreach ($commands as $command) {
+            $this->getApplication()->find($command)->run(new ArrayInput([]), $output);
+        }
     }
 }

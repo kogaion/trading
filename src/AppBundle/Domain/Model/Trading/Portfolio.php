@@ -9,6 +9,9 @@
 namespace AppBundle\Domain\Model\Trading;
 
 
+use AppBundle\Domain\Model\Util\Formatter;
+use Symfony\Component\Form\Form;
+
 class Portfolio
 {
     /**
@@ -34,7 +37,7 @@ class Portfolio
     /**
      * @var double
      */
-    protected $price;
+//    protected $price;
     /**
      * @var double
      */
@@ -46,7 +49,7 @@ class Portfolio
      */
     public function setUnitPrice($unitPrice)
     {
-        $this->unitPrice = $unitPrice;
+        $this->unitPrice = Formatter::toDouble($unitPrice);
         return $this;
     }
 
@@ -56,7 +59,7 @@ class Portfolio
      */
     public function setBalance($balance)
     {
-        $this->balance = $balance;
+        $this->balance = Formatter::toInt($balance);
         return $this;
     }
 
@@ -83,14 +86,15 @@ class Portfolio
     {
         return $this->unitPrice * $this->balance;
     }
-
+    
     /**
      * @param \DateTime $acquisitionDate
+     * @param string $format
      * @return Portfolio
      */
-    public function setAcquisitionDate($acquisitionDate)
+    public function setAcquisitionDate($acquisitionDate, $format = 'Y-m-d H:i:s')
     {
-        $this->acquisitionDate = $acquisitionDate;
+        $this->acquisitionDate = Formatter::toDateTime($acquisitionDate, $format);
         return $this;
     }
 

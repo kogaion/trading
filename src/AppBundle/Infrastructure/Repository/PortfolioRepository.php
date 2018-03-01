@@ -31,16 +31,24 @@ class PortfolioRepository extends EntityRepository implements Repo
             if (null !== $search->symbol) {
                 $findBy['symbol'] = $search->symbol;
             }
+            if (null !== $search->date) {
+                $findBy['acquisitionDate'] = $search->date;
+            }
         }
         return $this->findBy($findBy, ['acquisitionDate' => 'ASC']);
     }
     
     /**
-     * @param $symbol
-     * @return Portfolio
+     * @param Portfolio $p
+     * @return bool
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-//    public function loadPortfolio($symbol)
-//    {
-//        return $this->findOneBy(['symbol' => $symbol]);
-//    }
+    public function storePortfolio($p)
+    {
+        $manager = $this->getEntityManager();
+        $manager->persist($p);
+        $manager->flush();
+    
+        return true;
+    }
 }

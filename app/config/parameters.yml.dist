@@ -26,3 +26,5 @@ parameters:
     tdv_url_shares_screener: "https://2.tradeville.eu/Trading/Transaction/PersonalListsGrid.aspx"
     tdv_url_shares_screener_page_id: "the-id-of-the-custom-page-with-shares-in-tradeville"
     tdv_url_shares: "https://2.tradeville.eu/Trading/ReportsAndQuotes/QuotesShares.aspx"
+    tdv_url_portfolio: "https://2.tradeville.eu/Trading/MyAccount/ManageAccount.aspx?ctme=71"
+    tdv_url_symbol_portfolio: "https://2.tradeville.eu/Trading/MyAccount/Activity.aspx"

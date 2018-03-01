@@ -12,4 +12,7 @@ namespace AppBundle\Domain\Repository;
 class PortfolioSearch
 {
     public $symbol;
+    public $date;
+    public $price;
+    public $balance;
 }

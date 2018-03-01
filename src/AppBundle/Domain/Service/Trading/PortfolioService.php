@@ -49,10 +49,10 @@ class PortfolioService
      * @param string $symbol
      * @param int $balance
      * @param double $unitPrice
-     * @param \DateTime $acquisitionDate
+     * @param \DateTime|string $acquisitionDate
      * @return Portfolio
      */
-    public function makePortfolio($symbol, $balance, $unitPrice, \DateTime $acquisitionDate)
+    public function makePortfolio($symbol, $balance, $unitPrice, $acquisitionDate)
     {
         return (new Portfolio())
             ->setSymbol($symbol)
@@ -78,6 +78,7 @@ class PortfolioService
     {
         $search = new PortfolioSearch();
         $search->symbol = $symbol;
+        
         return $this->portfolioRepository->loadPortfolios($search);
     }
     
@@ -100,5 +101,23 @@ class PortfolioService
             );
         }
         return null;
+    }
+    
+    /**
+     * @param Portfolio $p
+     * @return bool
+     */
+    public function savePortfolio(Portfolio $p)
+    {
+        $search = new PortfolioSearch();
+        $search->symbol = $p->getSymbol();
+        $search->date = $p->getAcquisitionDate();
+        
+        $existingPortfolios = $this->portfolioRepository->loadPortfolios($search);
+        if (count($existingPortfolios)) {
+            return true;
+        }
+        
+        return $this->portfolioRepository->storePortfolio($p);
     }
 }

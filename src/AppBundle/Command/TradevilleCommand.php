@@ -14,6 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 abstract class TradevilleCommand extends ContainerAwareCommand
 {
+    /**
+     * @return Client
+     */
     protected function connect()
     {
         $client = new Client();

@@ -34,6 +34,7 @@ class BondsRepository extends EntityRepository implements Repo
     /**
      * @param PrincipalBonds $bond
      * @return bool
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function storeBond(PrincipalBonds $bond)
     {

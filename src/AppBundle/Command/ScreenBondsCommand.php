@@ -165,6 +165,12 @@ class ScreenBondsCommand extends TradevilleCommand
         return $bonds;
     }
     
+    /**
+     * @param Client $client
+     * @param $symbol
+     * @return Crawler
+     * @throws HttpException
+     */
     private function loadBonds(Client $client, $symbol)
     {
         $crawler = $client->request(

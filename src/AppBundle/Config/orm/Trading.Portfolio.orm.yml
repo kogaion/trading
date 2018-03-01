@@ -31,6 +31,7 @@ AppBundle\Domain\Model\Trading\Portfolio:
             column: irr
             type: decimal
             scale: 4
+            nullable: true
 
 
 
