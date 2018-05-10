@@ -16,7 +16,7 @@ use AppBundle\Domain\Model\Util\InvalidArgumentException;
 class CurrencyService
 {
     const DEFAULT_CURRENCY = 'LEI';
-
+    
     /**
      * @param string $currencySymbol
      * @param int $currencyPrecision
@@ -26,7 +26,7 @@ class CurrencyService
     {
         return (new Currency())->setSymbol($currencySymbol)->setPrecision($currencyPrecision);
     }
-
+    
     /**
      * @param string $currencySymbol
      * @return Currency
@@ -36,7 +36,7 @@ class CurrencyService
         $currencyPrecision = $this->searchCurrency($currencySymbol);
         return $this->makeCurrency($currencySymbol, $currencyPrecision);
     }
-
+    
     /**
      * @param $currencySymbol
      * @return mixed
@@ -49,10 +49,10 @@ class CurrencyService
         if (!array_key_exists($currencySymbol, $currencies)) {
             throw new InvalidArgumentException("Invalid currency: {$currencySymbol}", InvalidArgumentException::ERR_CURRENCY_INVALID);
         }
-
+        
         return $currencies[$currencySymbol];
     }
-
+    
     /**
      * @return array
      * @todo Load from repository
@@ -65,5 +65,5 @@ class CurrencyService
             'EUR' => 2,
         ];
     }
-
+    
 }

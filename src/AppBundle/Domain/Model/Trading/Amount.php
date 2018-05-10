@@ -21,7 +21,7 @@ class Amount
      * @var Currency
      */
     protected $currency;
-
+    
     /**
      * @param Currency $currency
      * @return Amount
@@ -31,7 +31,7 @@ class Amount
         $this->currency = $currency;
         return $this;
     }
-
+    
     /**
      * @param float $value
      * @return Amount
@@ -41,7 +41,7 @@ class Amount
         $this->value = $value;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -49,7 +49,7 @@ class Amount
     {
         return $this->value;
     }
-
+    
     /**
      * @return Currency
      */
@@ -57,7 +57,7 @@ class Amount
     {
         return $this->currency;
     }
-
+    
     /**
      * @param Amount $amount
      * @return $this
@@ -68,12 +68,12 @@ class Amount
         if ($this->getCurrency() != $amount->getCurrency()) {
             throw new InvalidOperationException("Currency mismatch: {$this->getCurrency()->getSymbol()} <> {$amount->getCurrency()->getSymbol()}", InvalidOperationException::ERR_CURRENCY_MISMATCH);
         }
-
+        
         $this->setValue($this->getValue() + $amount->getValue());
         return $this;
     }
-
-
+    
+    
     /**
      * @param Amount $amount
      * @return $this
@@ -84,7 +84,7 @@ class Amount
         if ($this->getCurrency() != $amount->getCurrency()) {
             throw new InvalidOperationException("Currency mismatch: {$this->getCurrency()->getSymbol()} <> {$amount->getCurrency()->getSymbol()}", InvalidOperationException::ERR_CURRENCY_MISMATCH);
         }
-
+        
         $this->setValue($this->getValue() - $amount->getValue());
         return $this;
     }

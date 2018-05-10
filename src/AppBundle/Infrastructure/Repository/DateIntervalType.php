@@ -34,7 +34,7 @@ class DateIntervalType extends Type
         $format = explode(',', $value);
         $di = new \DateInterval($format[2]);
         $di->invert = $format[1] == '-' ? 1 : 0;
-        $di->days = strlen($format[0]) ? (int) $format[0] : false;
+        $di->days = strlen($format[0]) ? (int)$format[0] : false;
         
         return $di;
     }

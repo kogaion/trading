@@ -19,13 +19,13 @@ class BondsExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Config'));
-
+        
         $loader->load('controllers.yml');
         $loader->load('services.yml');
-
+        
         $container->loadFromExtension('twig', [
             'paths' => [
-                __DIR__ . '/../Resources/Views/' =>'Bonds'
+                __DIR__ . '/../Resources/Views/' => 'Bonds'
             ]
         ]);
     }

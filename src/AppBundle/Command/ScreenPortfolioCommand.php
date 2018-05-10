@@ -10,7 +10,6 @@ namespace AppBundle\Command;
 
 
 use AppBundle\Domain\Model\Trading\Portfolio;
-use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\Formatter;
 use AppBundle\Domain\Model\Util\HttpException;
 use AppBundle\Domain\Service\Trading\PortfolioService;
@@ -55,7 +54,7 @@ class ScreenPortfolioCommand extends TradevilleCommand
                 
                 $output->write('Extracting portfolios for ' . $symbol . '. ');
                 $portfolios = $this->extractSymbolPortfolio($client, $symbol);
-    
+                
                 $output->writeln('Saving ' . count($portfolios) . ' portfolios.');
                 $this->savePortfolios($portfolios);
             }
@@ -85,7 +84,7 @@ class ScreenPortfolioCommand extends TradevilleCommand
         if (empty(($crawler->filter('div#ctl00_c_ucAdvancedPortfolio_divSharesAll tr')->getIterator()->count()))) {
             throw new HttpException("Could not load shares screener", HttpException::ERR_URI_FAILED);
         }
-    
+        
         $tableRows = $crawler->filter('div#ctl00_c_ucAdvancedPortfolio_divSharesAll tr')->getIterator();
         return $tableRows;
     }
@@ -102,17 +101,17 @@ class ScreenPortfolioCommand extends TradevilleCommand
         
         foreach ($symbolsIterator as $key => $row) {
             if ($row instanceof \DOMElement) {
-    
+                
                 // exclude the last 3 rows - currency, total profit, total
                 if ($key >= $countSymbols - 3) {
                     break;
                 }
-    
+                
                 $cells = $row->childNodes;
                 if ($row->getAttribute('class') == 'header') {
                     continue;
                 }
-    
+                
                 $symbols[] = $cells->item(0)->nodeValue;
             }
         }
@@ -138,17 +137,17 @@ class ScreenPortfolioCommand extends TradevilleCommand
         if (false !== stripos($crawler->filter('div#ctl00_c_ctl00_pnlShares')->text(), 'Nu exista date conform criteriilor de cautare.')) {
             return $portfolios;
         }
-    
+        
         $iterator = $crawler->filter('table#ctl00_c_ctl00_gvShares tr')->getIterator();
         if (empty($iterator->count())) {
             throw new HttpException("Could not load portfolio for symbol {$symbol}", HttpException::ERR_URI_FAILED);
         }
-    
+        
         foreach ($iterator as $key => $row) {
             if (!($row instanceof \DOMElement)) {
                 continue;
             }
-    
+            
             if ($row->getAttribute('class') == 'header') {
                 continue;
             }

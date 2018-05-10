@@ -23,7 +23,7 @@ class InflationService
     {
         return (new Inflation())->setRatio($ratio)->setDate($date);
     }
-
+    
     /**
      * @param \DateTime $forDate
      * @return Inflation
@@ -32,14 +32,14 @@ class InflationService
     {
         $inflating = $this->loadInflating();
         $dateFormatted = $forDate->format('U');
-
+        
         if (array_key_exists($dateFormatted, $inflating)) {
             return $this->makeInflation($inflating[$dateFormatted], clone $forDate);
         }
-
+        
         $inflating[$dateFormatted] = 0;
         ksort($inflating);
-
+        
         $datesFormatted = array_keys($inflating);
         $ratio = 0;
         for ($idx = 0, $cnt = count($datesFormatted); $idx < $cnt; $idx++) {
@@ -51,10 +51,10 @@ class InflationService
                 }
             }
         }
-
+        
         return $this->makeInflation($ratio, clone $forDate);
     }
-
+    
     /**
      * @return Inflation[]
      */
@@ -66,7 +66,7 @@ class InflationService
         }
         return $inflating;
     }
-
+    
     /**
      * @return array
      * @todo load from Repository

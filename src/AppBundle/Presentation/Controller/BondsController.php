@@ -54,7 +54,7 @@ class BondsController extends Controller
         // increment interval, default currency
         $dateInterval = new \DateInterval('P10D');
         $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo how else?
-    
+        
         $bondsSeries = [];
         $allBonds = $bondsService->listBonds();
         $portfolios = $portfolioService->listPortfolios();

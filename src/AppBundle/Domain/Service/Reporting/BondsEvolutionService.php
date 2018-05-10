@@ -23,12 +23,12 @@ class BondsEvolutionService
      * @var Bond
      */
     protected $principal;
-
+    
     /**
      * @var Portfolio
      */
     protected $portfolio;
-
+    
     /**
      * @var InterestService
      */
@@ -41,7 +41,7 @@ class BondsEvolutionService
      * @var PortfolioService
      */
     protected $portfolioService;
-
+    
     /**
      * BondsEvolutionService constructor.
      * @param InterestService $interestService
@@ -54,7 +54,7 @@ class BondsEvolutionService
         $this->evolutionService = $evolutionService;
         $this->portfolioService = $portfolioService;
     }
-
+    
     /**
      * @param Bond $principal
      * @return BondsEvolutionService
@@ -64,7 +64,7 @@ class BondsEvolutionService
         $this->principal = $principal;
         return $this;
     }
-
+    
     /**
      * @param Portfolio $portfolio
      * @return BondsEvolutionService
@@ -74,7 +74,7 @@ class BondsEvolutionService
         $this->portfolio = $portfolio;
         return $this;
     }
-
+    
     /**
      * @param \DateInterval $interval
      * @return Evolution[]
@@ -83,28 +83,28 @@ class BondsEvolutionService
     {
         $fromDate = clone $this->portfolio->getAcquisitionDate();
         $toDate = clone $this->principal->getMaturityDate();
-
+        
         $return = [];
-
+        
         $curDate = clone $fromDate;
         while (true) {
             $amount = $this->getEvolutionForInterval($fromDate, $curDate);
             $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount);
-
+            
             $curDate = $curDate->add($interval);
             if ($curDate->format('U') >= $toDate->format('U')) {
                 $curDate = clone $toDate;
-
+                
                 $amount = $this->getEvolutionForInterval($fromDate, $curDate);
                 $return[] = $this->evolutionService->makeEvolution(clone $curDate, $amount);
-
+                
                 break;
             }
         }
-
+        
         return $return;
     }
-
+    
     /**
      * @param \DateTime $fromDate
      * @param \DateTime $toDate
@@ -118,10 +118,10 @@ class BondsEvolutionService
             $fromDate,
             $toDate
         );
-
+        
         return $amountFromInterest;
     }
-
+    
     /**
      * @return Portfolio
      */
@@ -134,7 +134,7 @@ class BondsEvolutionService
             $this->portfolio->getAcquisitionDate()
         );
     }
-
+    
     /**
      * @param \DateTime $fromDate
      * @param \DateTime $toDate

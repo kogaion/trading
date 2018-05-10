@@ -53,7 +53,7 @@ class ScreenSharesCommand extends TradevilleCommand
             
             $output->writeln("Extracting shares");
             $sharesScreener = $this->loadSharesScreenerFromDOM($crawler);
-    
+            
             $output->writeln("Saving " . count($sharesScreener) . " shares.");
             $this->sharesScreenerService->saveShares($sharesScreener);
             
@@ -84,30 +84,30 @@ class ScreenSharesCommand extends TradevilleCommand
         }
         
         $form = $crawler->filter('#aspnetForm')->form();
-    
+        
         $form['ctl00$c$pl$ddlLists']->select($this->getContainer()->getParameter('tdv_url_shares_screener_page_id'));
 //        $form['__EVENTTARGET']->setValue('ctl00$c$pl$ddlLists');
 //        $form['__EVENTARGUMENT']->setValue('');
-    
+        
         $domDocument = new \DOMDocument;
         $domInputTarget = $domDocument->createElement('input');
         $domInputTarget->setAttribute('name', '__EVENTTARGET');
         $domInputTarget->setAttribute('value', 'ctl00$c$pl$ddlLists');
-    
+        
         $domInputArgument = $domDocument->createElement('input');
         $domInputArgument->setAttribute('name', '__EVENTARGUMENT');
         $domInputArgument->setAttribute('value', '');
-    
+        
         $formInputTarget = new InputFormField($domInputTarget);
         $formInputArgument = new InputFormField($domInputArgument);
         $form->set($formInputTarget);
         $form->set($formInputArgument);
-    
+        
         $crawler = $client->submit($form);
         if (empty($crawler->filter('#ctl00_c_divPersonalListDetails')->getIterator()->count())) {
             throw new HttpException("Could not load special page", HttpException::ERR_URI_FAILED);
         }
-    
+        
         return $crawler;
     }
     
@@ -120,7 +120,7 @@ class ScreenSharesCommand extends TradevilleCommand
         $crawler = $crawler->filter('#ctl00_divAll div.boxbig.topmargin table.rows.whitebg')->first()->filter('tr');
         $tableRows = $crawler->getIterator();
         $shares = [];
-    
+        
         $referenceDate = '00/00/0000';
         foreach ($tableRows as $key => $row) {
             if ($row instanceof \DOMElement) {
@@ -135,7 +135,7 @@ class ScreenSharesCommand extends TradevilleCommand
                     }
                     continue;
                 }
-    
+                
                 $sharesScreener = (new SharesScreener())
                     ->setSymbol($cells->item(0)->nodeValue)
                     ->setLastPrice($cells->item(2)->nodeValue)
@@ -144,8 +144,7 @@ class ScreenSharesCommand extends TradevilleCommand
                     ->setReferencePrice($cells->item(4)->nodeValue)
                     ->setBid($cells->item(5)->nodeValue)
                     ->setAsk($cells->item(6)->nodeValue)
-                    ->setDate(DateTimeInterval::getDate());
-                ;
+                    ->setDate(DateTimeInterval::getDate());;
                 
                 $shares[] = $sharesScreener;
                 

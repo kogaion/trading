@@ -19,7 +19,7 @@ class AmountService
      * @var CurrencyService
      */
     protected $currencyService;
-
+    
     /**
      * AmountService constructor.
      * @param CurrencyService $currencyService
@@ -28,7 +28,7 @@ class AmountService
     {
         $this->currencyService = $currencyService;
     }
-
+    
     /**
      * @param float $value
      * @param Currency $currency
@@ -38,7 +38,7 @@ class AmountService
     {
         return (new Amount())->setValue($value)->setCurrency($currency);
     }
-
+    
     /**
      * @facade
      * @param float $value

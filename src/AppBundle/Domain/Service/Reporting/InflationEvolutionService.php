@@ -23,7 +23,7 @@ class InflationEvolutionService
      * @var EvolutionService
      */
     protected $evolutionService;
-
+    
     /**
      * InflationEvolutionService constructor.
      * @param InflationService $inflationService
@@ -34,7 +34,7 @@ class InflationEvolutionService
         $this->inflationService = $inflationService;
         $this->evolutionService = $evolutionService;
     }
-
+    
     /**
      * @param \DateTime $fromDate
      * @param \DateTime $toDate
@@ -44,24 +44,24 @@ class InflationEvolutionService
     public function getEvolution(\DateTime $fromDate, \DateTime $toDate, \DateInterval $interval)
     {
         $return = [];
-
+        
         $curDate = clone $fromDate;
         while (true) {
-
+            
             $inflation = $this->inflationService->buildInflation($curDate);
             $return[] = $this->evolutionService->makeEvolution(clone $curDate, $inflation->getRatio());
-
+            
             $curDate = $curDate->add($interval);
             if ($curDate->format('U') >= $toDate->format('U')) {
                 $curDate = clone $toDate;
-
+                
                 $inflation = $this->inflationService->buildInflation($curDate);
                 $return[] = $this->evolutionService->makeEvolution(clone $curDate, $inflation->getRatio());
-
+                
                 break;
             }
         }
-
+        
         return $return;
     }
 }

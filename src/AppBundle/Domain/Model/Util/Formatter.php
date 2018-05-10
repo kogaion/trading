@@ -16,7 +16,7 @@ class Formatter
         if (!is_double($param)) {
             $param = floatval(str_replace([$thousandSep, $decPoint], ['', '.'], trim($param)));
         }
-        return (double) $param;
+        return (double)$param;
     }
     
     public static function toInt($param, $decPoint = '.', $thousandSep = ',')
@@ -24,7 +24,7 @@ class Formatter
         if (!is_int($param)) {
             $param = self::toDouble($param, $decPoint, $thousandSep);
         }
-        return (int) $param;
+        return (int)$param;
     }
     
     public static function toDateTime($param, $format = 'm/d/Y')

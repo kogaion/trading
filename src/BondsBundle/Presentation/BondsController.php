@@ -16,7 +16,7 @@ class BondsController extends Controller
     public function viewAction($bonds)
     {
         return $this->render("@Bonds/view.html.twig", [
-
+        
         ]);
     }
 }

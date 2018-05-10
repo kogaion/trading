@@ -77,10 +77,10 @@ class BondsScreenerRepository extends EntityRepository implements Repo
     public function loadBond($symbol)
     {
         return $this->findOneBy([
-            'symbol'    => $symbol,
+            'symbol' => $symbol,
         ], [
-            'screenDate'    => 'desc',
-            'date'         => 'desc'
+            'screenDate' => 'desc',
+            'date' => 'desc'
         ]);
     }
 }

@@ -60,7 +60,7 @@ class PortfolioService
             ->setBalance($balance)
             ->setAcquisitionDate($acquisitionDate);
     }
-
+    
     /**
      * @return Portfolio[]
      */
@@ -69,7 +69,7 @@ class PortfolioService
         // get existing bonds
         return $this->portfolioRepository->loadPortfolios();
     }
-
+    
     /**
      * @param $symbol
      * @return Portfolio[]
@@ -92,7 +92,7 @@ class PortfolioService
     {
         $bonds = $this->bondsScreenerRepository->loadBond($symbol);
         if ($bonds instanceof BondsScreener && $bonds->getSymbol() == $symbol) {
-            $price  = $price ?: $bonds->getDirtyPrice();
+            $price = $price ?: $bonds->getDirtyPrice();
             return $this->makePortfolio(
                 $symbol,
                 $bonds->getAskQty(),

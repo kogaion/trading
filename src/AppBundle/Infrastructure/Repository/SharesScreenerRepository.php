@@ -74,10 +74,10 @@ class SharesScreenerRepository extends EntityRepository implements Repo
     public function loadShare($symbol)
     {
         return $this->findOneBy([
-            'symbol'    => $symbol,
+            'symbol' => $symbol,
         ], [
-            'screenDate'    => 'desc',
-            'date'         => 'desc'
+            'screenDate' => 'desc',
+            'date' => 'desc'
         ]);
     }
 }

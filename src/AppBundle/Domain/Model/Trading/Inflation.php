@@ -19,7 +19,7 @@ class Inflation
      * @var \DateTime
      */
     protected $date;
-
+    
     /**
      * @param float $ratio
      * @return Inflation
@@ -29,7 +29,7 @@ class Inflation
         $this->ratio = $ratio;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -37,7 +37,7 @@ class Inflation
     {
         return $this->ratio;
     }
-
+    
     /**
      * @param \DateTime $date
      * @return Inflation
@@ -47,7 +47,7 @@ class Inflation
         $this->date = $date;
         return $this;
     }
-
+    
     /**
      * @return \DateTime
      */

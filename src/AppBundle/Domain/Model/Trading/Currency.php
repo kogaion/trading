@@ -15,12 +15,12 @@ class Currency
      * @var string 3 letter code
      */
     protected $symbol;
-
+    
     /**
      * @var int
      */
     protected $precision = 2;
-
+    
     /**
      * @return int
      */
@@ -28,7 +28,7 @@ class Currency
     {
         return $this->precision;
     }
-
+    
     /**
      * @param string $symbol
      * @return Currency
@@ -38,7 +38,7 @@ class Currency
         $this->symbol = strtoupper($symbol);
         return $this;
     }
-
+    
     /**
      * @param int $precision
      * @return Currency
@@ -48,7 +48,7 @@ class Currency
         $this->precision = (int)$precision;
         return $this;
     }
-
+    
     /**
      * @return string
      */

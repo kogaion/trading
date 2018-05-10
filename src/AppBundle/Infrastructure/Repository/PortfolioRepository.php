@@ -48,7 +48,7 @@ class PortfolioRepository extends EntityRepository implements Repo
         $manager = $this->getEntityManager();
         $manager->persist($p);
         $manager->flush();
-    
+        
         return true;
     }
 }

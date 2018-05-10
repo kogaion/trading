@@ -40,6 +40,13 @@ class ScreenBondsCommand extends TradevilleCommand
     private $interestService;
     
     
+    /**
+     * ScreenBondsCommand constructor.
+     * @param null $name
+     * @param BondsScreenerService $bondsScreenerService
+     * @param BondsService $bondsService
+     * @param InterestService $interestService
+     */
     public function __construct(
         $name = null,
         BondsScreenerService $bondsScreenerService,
@@ -52,6 +59,9 @@ class ScreenBondsCommand extends TradevilleCommand
         $this->interestService = $interestService;
     }
     
+    /**
+     *
+     */
     protected function configure()
     {
         $this->setName('screen:bonds')
@@ -59,6 +69,12 @@ class ScreenBondsCommand extends TradevilleCommand
             ->setHelp('Get Bonds from Tradeville');
     }
     
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(["Connecting to Tradeville."]);
@@ -110,7 +126,6 @@ class ScreenBondsCommand extends TradevilleCommand
     }
     
     
-    
     /**
      * @param Client $client
      * @return Crawler
@@ -140,7 +155,7 @@ class ScreenBondsCommand extends TradevilleCommand
         
         foreach ($tableRows as $key => $row) {
             if ($row instanceof \DOMElement) {
-    
+                
                 $cells = $row->childNodes;
                 
                 if ($row->getAttribute('class') == 'header') {
@@ -189,6 +204,7 @@ class ScreenBondsCommand extends TradevilleCommand
      * @param Crawler $crawler
      * @param $symbol
      * @return Bond
+     * @throws \Exception
      */
     private function loadBondsFromDOM(Crawler $crawler, $symbol)
     {

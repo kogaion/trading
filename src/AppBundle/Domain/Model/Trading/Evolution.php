@@ -15,12 +15,12 @@ class Evolution
      * @var \DateTime
      */
     protected $date;
-
+    
     /**
      * @var float
      */
     protected $value;
-
+    
     /**
      * @param \DateTime $date
      * @return Evolution
@@ -30,7 +30,7 @@ class Evolution
         $this->date = $date;
         return $this;
     }
-
+    
     /**
      * @return \DateTime
      */
@@ -38,7 +38,7 @@ class Evolution
     {
         return $this->date;
     }
-
+    
     /**
      * @param float $value
      * @return Evolution
@@ -48,7 +48,7 @@ class Evolution
         $this->value = $value;
         return $this;
     }
-
+    
     /**
      * @return float
      */

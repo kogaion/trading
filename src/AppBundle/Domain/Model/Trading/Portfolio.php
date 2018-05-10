@@ -42,7 +42,7 @@ class Portfolio
      * @var double
      */
     protected $internalReturnRate;
-
+    
     /**
      * @param double $unitPrice
      * @return Portfolio
@@ -52,7 +52,7 @@ class Portfolio
         $this->unitPrice = Formatter::toDouble($unitPrice);
         return $this;
     }
-
+    
     /**
      * @param int $balance
      * @return Portfolio
@@ -62,7 +62,7 @@ class Portfolio
         $this->balance = Formatter::toInt($balance);
         return $this;
     }
-
+    
     /**
      * @return double
      */
@@ -70,7 +70,7 @@ class Portfolio
     {
         return $this->unitPrice;
     }
-
+    
     /**
      * @return int
      */
@@ -78,7 +78,7 @@ class Portfolio
     {
         return $this->balance;
     }
-
+    
     /**
      * @return double
      */
@@ -97,7 +97,7 @@ class Portfolio
         $this->acquisitionDate = Formatter::toDateTime($acquisitionDate, $format);
         return $this;
     }
-
+    
     /**
      * @return \DateTime
      */

@@ -27,7 +27,7 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository
         $this->_em = $entityManager;
         $this->_class = $entityManager->getClassMetadata($className);
         $this->_entityName = $className;
-    
+        
         try {
             Type::getType('type_date_interval');
         } catch (DBALException $ex) {
@@ -36,16 +36,19 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository
         
         
     }
+    
     public function getModelClass()
     {
         return $this->_entityName;
     }
+    
     protected function doTransactionalPersist($entity)
     {
         $this->_em->transactional(function () use ($entity) {
             $this->_em->persist($entity);
         });
     }
+    
     protected function doTransactionalRemove($entity)
     {
         $this->_em->transactional(function () use ($entity) {

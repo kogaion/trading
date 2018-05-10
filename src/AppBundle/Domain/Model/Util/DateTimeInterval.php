@@ -25,10 +25,10 @@ class DateTimeInterval
         $startDate = clone $fromDate;
         $endDate = clone $fromDate;
         $endDate = $endDate->add($interval);
-
+        
         return $startDate->diff($endDate);
     }
-
+    
     /**
      * @return \DateTime
      */
@@ -36,7 +36,7 @@ class DateTimeInterval
     {
         return new \DateTime('today');
     }
-
+    
     /**
      * @param string $dateString
      * @return \DateTime

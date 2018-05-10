@@ -19,7 +19,7 @@ abstract class Principal
      * @var string
      */
     protected $symbol;
-
+    
     /**
      * @param string $symbol
      * @return $this
@@ -29,7 +29,7 @@ abstract class Principal
         $this->symbol = $symbol;
         return $this;
     }
-
+    
     /**
      * @return string
      */

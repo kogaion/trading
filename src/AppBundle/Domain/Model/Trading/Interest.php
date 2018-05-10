@@ -34,7 +34,7 @@ class Interest
      * @var string
      */
     protected $type;
-
+    
     /**
      * @param double $percent
      * @return Interest
@@ -44,7 +44,7 @@ class Interest
         $this->percent = Formatter::toDouble($percent);
         return $this;
     }
-
+    
     /**
      * @param \DateInterval $interval
      * @return Interest
@@ -54,7 +54,7 @@ class Interest
         $this->interval = $interval;
         return $this;
     }
-
+    
     /**
      * @return float
      */
@@ -62,7 +62,7 @@ class Interest
     {
         return $this->percent;
     }
-
+    
     /**
      * @return \DateInterval
      */
@@ -78,7 +78,7 @@ class Interest
     public function setType($type)
     {
         if (in_array($type, [self::TYPE_FIXED, self::TYPE_VARIABLE])) {
-            $this->type =  $type;
+            $this->type = $type;
         }
         
         return $this;
