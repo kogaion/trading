@@ -11,7 +11,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Domain\Model\Crawling\BondsScreener;
 use AppBundle\Domain\Model\Trading\Interest;
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\Formatter;
 use AppBundle\Domain\Model\Util\HttpException;
@@ -188,7 +188,7 @@ class ScreenBondsCommand extends TradevilleCommand
     /**
      * @param Crawler $crawler
      * @param $symbol
-     * @return PrincipalBonds
+     * @return Bond
      */
     private function loadBondsFromDOM(Crawler $crawler, $symbol)
     {

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Domain\Service\Trading;
 
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Trading\CurrencyService;
@@ -31,7 +31,7 @@ class BondsServiceTest extends TestCase
 
         $instance = $this->bondsService->buildBonds($bondsSymbol);
 
-        $this->assertInstanceOf(PrincipalBonds::class, $instance);
+        $this->assertInstanceOf(Bond::class, $instance);
         $this->assertEquals($bondsSymbol, $instance->getSymbol());
         $this->assertEquals($interestPercent, $instance->getInterest()->getPercent());
         $this->assertEquals(DateTimeInterval::recalculate(new \DateInterval($interestInterval)), DateTimeInterval::recalculate($instance->getInterest()->getInterval()));
@@ -56,7 +56,7 @@ class BondsServiceTest extends TestCase
 
         $this->assertCount(count($bonds), $principals);
         $this->assertArrayHasKey($bondsSymbol, $principals);
-        $this->assertInstanceOf(PrincipalBonds::class, $principals[$bondsSymbol]);
+        $this->assertInstanceOf(Bond::class, $principals[$bondsSymbol]);
     }
 
     public function testBuilderThrowsExceptionForInvalidBondsSymbol()

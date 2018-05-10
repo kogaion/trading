@@ -9,24 +9,24 @@
 namespace AppBundle\Domain\Repository;
 
 
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 
 interface BondsRepository
 {
     /**
      * @param $symbol
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function loadBond($symbol);
     
     /**
-     * @param PrincipalBonds $bond
+     * @param Bond $bond
      * @return bool
      */
-    public function storeBond(PrincipalBonds $bond);
+    public function storeBond(Bond $bond);
     
     /**
-     * @return PrincipalBonds[]
+     * @return Bond[]
      */
     public function loadBonds();
 }

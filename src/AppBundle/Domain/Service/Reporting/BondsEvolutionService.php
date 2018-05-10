@@ -11,7 +11,7 @@ namespace AppBundle\Domain\Service\Reporting;
 
 use AppBundle\Domain\Model\Trading\Evolution;
 use AppBundle\Domain\Model\Trading\Portfolio;
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Service\Trading\InterestService;
 use AppBundle\Domain\Service\Trading\EvolutionService;
 use AppBundle\Domain\Service\Trading\PortfolioService;
@@ -20,7 +20,7 @@ use AppBundle\Domain\Service\Trading\PortfolioService;
 class BondsEvolutionService
 {
     /**
-     * @var PrincipalBonds
+     * @var Bond
      */
     protected $principal;
 
@@ -56,7 +56,7 @@ class BondsEvolutionService
     }
 
     /**
-     * @param PrincipalBonds $principal
+     * @param Bond $principal
      * @return BondsEvolutionService
      */
     public function setPrincipal($principal)

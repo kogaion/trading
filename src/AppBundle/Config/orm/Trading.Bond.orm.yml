@@ -1,4 +1,4 @@
-AppBundle\Domain\Model\Trading\PrincipalBonds:
+AppBundle\Domain\Model\Trading\Bond:
     type: entity
     repositoryClass: AppBundle\Domain\Repository\BondsRepository
 

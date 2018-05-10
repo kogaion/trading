@@ -10,6 +10,7 @@ namespace AppBundle\Command;
 
 
 use AppBundle\Domain\Model\Trading\Portfolio;
+use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\Formatter;
 use AppBundle\Domain\Model\Util\HttpException;
 use AppBundle\Domain\Service\Trading\PortfolioService;
@@ -133,6 +134,11 @@ class ScreenPortfolioCommand extends TradevilleCommand
                 'Symbol' => $symbol,
                 'Tab' => 'Activity',
             ]));
+        
+        if (false !== stripos($crawler->filter('div#ctl00_c_ctl00_pnlShares')->text(), 'Nu exista date conform criteriilor de cautare.')) {
+            return $portfolios;
+        }
+    
         $iterator = $crawler->filter('table#ctl00_c_ctl00_gvShares tr')->getIterator();
         if (empty($iterator->count())) {
             throw new HttpException("Could not load portfolio for symbol {$symbol}", HttpException::ERR_URI_FAILED);

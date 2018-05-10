@@ -10,7 +10,7 @@ namespace AppBundle\Domain\Service\Trading;
 
 
 use AppBundle\Domain\Model\Trading\Interest;
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Repository\BondsRepository;
 use AppBundle\Domain\Service\Crawling\BondsScreenerService;
@@ -51,11 +51,11 @@ class BondsService
      * @param Interest $interest
      * @param double $faceValue
      * @param \DateTime $maturityDate
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function makeBond($symbol, Interest $interest, $faceValue, \DateTime $maturityDate)
     {
-        return (new PrincipalBonds())
+        return (new Bond())
             ->setSymbol($symbol)
             ->setInterest($interest)
             ->setFaceValue($faceValue)
@@ -63,10 +63,10 @@ class BondsService
     }
     
     /**
-     * @param PrincipalBonds $bond
+     * @param Bond $bond
      * @return bool
      */
-    public function saveBond(PrincipalBonds $bond)
+    public function saveBond(Bond $bond)
     {
         // @todo ignore Variable interest bonds, for now
         if ($bond->getInterest()->getType() == Interest::TYPE_VARIABLE) {
@@ -78,20 +78,20 @@ class BondsService
     
     /**
      * @param $bondsSymbol
-     * @return PrincipalBonds
+     * @return Bond
      * @throws InvalidArgumentException
      */
     public function buildBonds($bondsSymbol)
     {
         $bond = $this->bondsRepository->loadBond($bondsSymbol);
-        if (!($bond instanceof PrincipalBonds) || $bond->getSymbol() != $bondsSymbol) {
+        if (!($bond instanceof Bond) || $bond->getSymbol() != $bondsSymbol) {
             throw new InvalidArgumentException("Invalid bonds: {$bondsSymbol}", InvalidArgumentException::ERR_PRINCIPAL_INVALID);
         }
         return $bond;
     }
     
     /**
-     * @return PrincipalBonds[]
+     * @return Bond[]
      */
     public function listBonds()
     {

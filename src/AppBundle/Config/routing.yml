@@ -13,3 +13,6 @@ bonds_view:
     path: /bonds/{bondsSymbol}
     defaults: { _controller: 'AppBundle\Presentation\Controller\BondsController:viewAction' }
 
+shares_list:
+    path: /shares
+    defaults: { _controller: 'AppBundle\Presentation\Controller\SharesController::listAction' }

@@ -12,7 +12,7 @@ namespace AppBundle\Presentation\Controller;
 use AppBundle\Domain\Model\Trading\Currency;
 use AppBundle\Domain\Model\Trading\Evolution;
 use AppBundle\Domain\Model\Trading\Portfolio;
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Model\Util\DateTimeInterval;
 use AppBundle\Domain\Model\Util\InvalidArgumentException;
 use AppBundle\Domain\Service\Reporting\BondsEvolutionService;
@@ -54,15 +54,20 @@ class BondsController extends Controller
         // increment interval, default currency
         $dateInterval = new \DateInterval('P10D');
         $currency = $currencyService->buildCurrency(CurrencyService::DEFAULT_CURRENCY); // @todo how else?
-        
+    
+        $bondsSeries = [];
         $allBonds = $bondsService->listBonds();
         $portfolios = $portfolioService->listPortfolios();
         
-        $bondsSeries = [];
-        foreach ($portfolios as $p) {
-            $b = $bondsService->buildBonds($p->getSymbol());
-            $bondsSeries[] = [$b, $p, true];
+        foreach ($portfolios as $keyP => $p) {
+            foreach ($allBonds as $b) {
+                if ($b->getSymbol() == $p->getSymbol()) {
+                    $b = $bondsService->buildBonds($p->getSymbol());
+                    $bondsSeries[] = [$b, $p, true];
+                }
+            }
         }
+        
         foreach ($allBonds as $b) {
             $p = $portfolioService->buildVirtualPortfolio($b->getSymbol(), null, $virtualPortfolioStartDate);
             $bondsSeries[] = [$b, $p, false];
@@ -289,7 +294,7 @@ class BondsController extends Controller
         foreach ($bondsSeries as $data) {
             
             /**
-             * @var PrincipalBonds $bonds
+             * @var Bond $bonds
              * @var Portfolio $portfolio
              */
             $bonds = $data[0];

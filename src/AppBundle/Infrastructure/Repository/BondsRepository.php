@@ -10,21 +10,21 @@ namespace AppBundle\Infrastructure\Repository;
 
 use AppBundle\Domain\Model\Trading\Interest;
 use AppBundle\Domain\Model\Trading\Portfolio;
-use AppBundle\Domain\Model\Trading\PrincipalBonds;
+use AppBundle\Domain\Model\Trading\Bond;
 use AppBundle\Domain\Repository\BondsRepository as Repo;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 class BondsRepository extends EntityRepository implements Repo
 {
-    public function __construct(EntityManagerInterface $entityManager, $class = PrincipalBonds::class)
+    public function __construct(EntityManagerInterface $entityManager, $class = Bond::class)
     {
         parent::__construct($entityManager, $class);
     }
     
     /**
      * @param $symbol
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function loadBond($symbol)
     {
@@ -32,11 +32,11 @@ class BondsRepository extends EntityRepository implements Repo
     }
     
     /**
-     * @param PrincipalBonds $bond
+     * @param Bond $bond
      * @return bool
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function storeBond(PrincipalBonds $bond)
+    public function storeBond(Bond $bond)
     {
         $manager = $this->getEntityManager();
         $manager->persist($bond);
@@ -46,7 +46,7 @@ class BondsRepository extends EntityRepository implements Repo
     }
     
     /**
-     * @return PrincipalBonds[]
+     * @return Bond[]
      */
     public function loadBonds()
     {

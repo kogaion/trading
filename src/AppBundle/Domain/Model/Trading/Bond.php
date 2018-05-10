@@ -11,7 +11,7 @@ namespace AppBundle\Domain\Model\Trading;
 
 use AppBundle\Domain\Model\Util\Formatter;
 
-class PrincipalBonds extends Principal
+class Bond extends Principal
 {
     /**
      * @var double
@@ -30,7 +30,7 @@ class PrincipalBonds extends Principal
     
     /**
      * @param double $faceValue
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function setFaceValue($faceValue)
     {
@@ -40,7 +40,7 @@ class PrincipalBonds extends Principal
     
     /**
      * @param \DateTime $maturityDate
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function setMaturityDate($maturityDate)
     {
@@ -50,7 +50,7 @@ class PrincipalBonds extends Principal
     
     /**
      * @param Interest $interest
-     * @return PrincipalBonds
+     * @return Bond
      */
     public function setInterest($interest)
     {
